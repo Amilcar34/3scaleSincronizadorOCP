@@ -74,7 +74,6 @@ public class Sincro3ScaleWhitAzure {
 					System.err.println(k + " falta " + from3Scale + " en Azure");
 			}
 		});
-		System.out.println();
 	}
 
 	private static void CompareContentMappingRulesFromAzure() {
@@ -93,7 +92,6 @@ public class Sincro3ScaleWhitAzure {
 					System.err.println(k + " falta " + fromAzure + " en 3scale");
 			}
 		});
-		System.out.println();
 	}
 
 	private static void CompareCountMappingRules() {
@@ -144,9 +142,7 @@ public class Sincro3ScaleWhitAzure {
 		Set<String> backendUsageskeySet = backendUsages.keySet();
 
 		for (String k : backendUsageskeySet) {
-
 			if (!k.equalsIgnoreCase(ignore)) {
-				System.out.println(k);
 				String ejecute = ejecute("oc get backend " + k + " -o jsonpath='{.spec}'");
 				Spec spec = new Gson().fromJson(clean(ejecute), Spec.class);
 				backendFrom3Scale.put(k, spec);
