@@ -53,9 +53,34 @@ public class Sincro3ScaleWhitAzure {
 		System.out.println("----- Content MappingRules segun 3Scale-----");
 		System.out.println();
 		CompareContentMappingRulesFrom3Scale();
-		
+
+		System.out.println("----- Check de privateBaseURL -----");
+		System.out.println();
+		CheckPrivateBaseURL();
+
 		System.out.println("----- FIN -----");
 
+	}
+
+	private static void CheckPrivateBaseURL() {
+		
+		System.out.println("Check de uso de rutas publicas en 3scale");
+		backendFrom3Scale.forEach((k, v) -> {
+			boolean isService = v.getpublicBaseURL().contains(".svc.");
+			if(!isService) {
+				System.err.println("WARNING: " + k + " del cluster expone una ruta publica: ");
+				System.out.println(v.getpublicBaseURL());
+			}
+		});
+		System.out.println();
+		System.out.println("Check de uso de rutas publicas en Azure");
+		backendsFromAzure.forEach((k, v) -> {
+			boolean isService = v.getSpec().getpublicBaseURL().contains(".svc.");
+			if(!isService) {
+				System.err.println("WARNING: " + k + " del Azure expone una ruta publica: ");
+				System.out.println(v.getSpec().getpublicBaseURL());
+			}
+		});
 	}
 
 	private static void CompareContentMappingRulesFrom3Scale() {
