@@ -42,12 +42,61 @@ public class Sincro3ScaleWhitAzure {
 		System.out.println();
 		BackendsCompareName();
 
-		System.out.println("----- Inicializa MappingRules-----");
+		System.out.println("----- Count MappingRules-----");
 		System.out.println();
-		BackendsCompareMappingRules();
+		CompareCountMappingRules();
+
+		System.out.println("----- Content MappingRules segun Azure-----");
+		System.out.println();
+		CompareContentMappingRulesFromAzure();
+
+		System.out.println("----- Content MappingRules segun 3Scale-----");
+		System.out.println();
+		CompareContentMappingRulesFrom3Scale();
+		
+		System.out.println("----- FIN -----");
+
 	}
 
-	private static void BackendsCompareMappingRules() {
+	private static void CompareContentMappingRulesFrom3Scale() {
+		
+		backendFrom3Scale.forEach((k, v) -> {
+			MappingRule[] MappingRulesFromAzure = backendsFromAzure.get(k).getSpec().getMappingRules();
+			MappingRule[] MappingRulesFrom3Scale = v.getMappingRules();
+
+			for (MappingRule from3Scale : MappingRulesFrom3Scale) {
+				boolean exist = false;
+				for (MappingRule fromAzure : MappingRulesFromAzure) {
+					if (from3Scale.equals(fromAzure))
+						exist = true;
+				}
+				if(!exist)
+					System.err.println(k + " falta " + from3Scale + " en Azure");
+			}
+		});
+		System.out.println();
+	}
+
+	private static void CompareContentMappingRulesFromAzure() {
+
+		backendsFromAzure.forEach((k, v) -> {
+			MappingRule[] MappingRulesFrom3Scale = backendFrom3Scale.get(k).getMappingRules();
+			MappingRule[] MappingRulesFromAzure = v.getSpec().getMappingRules();
+
+			for (MappingRule fromAzure : MappingRulesFromAzure) {
+				boolean exist = false;
+				for (MappingRule from3Scale : MappingRulesFrom3Scale) {
+					if (from3Scale.equals(fromAzure))
+						exist = true;
+				}
+				if(!exist)
+					System.err.println(k + " falta " + fromAzure + " en 3scale");
+			}
+		});
+		System.out.println();
+	}
+
+	private static void CompareCountMappingRules() {
 
 		backendsFromAzure.forEach((k, v) -> {
 			MappingRule[] MappingRulesFrom3Scale = backendFrom3Scale.get(k).getMappingRules();
