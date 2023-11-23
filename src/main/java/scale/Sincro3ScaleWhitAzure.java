@@ -16,6 +16,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.gson.Gson;
 
 import model.Backend;
+import model.MappingRule;
 import model.Spec;
 
 public class Sincro3ScaleWhitAzure {
@@ -47,23 +48,33 @@ public class Sincro3ScaleWhitAzure {
 	}
 
 	private static void BackendsCompareMappingRules() {
-		// TODO Auto-generated method stub
 
+		backendsFromAzure.forEach((k, v) -> {
+			MappingRule[] MappingRulesFrom3Scale = backendFrom3Scale.get(k).getMappingRules();
+			MappingRule[] MappingRulesFromAzure = v.getSpec().getMappingRules();
+
+			if (MappingRulesFrom3Scale.length != MappingRulesFromAzure.length) {
+				System.err.println(k + " no coinciden la cantidad de MappingRules");
+				System.err.println(k + " MappingRules 3Scale " + MappingRulesFrom3Scale.length);
+				System.err.println(k + " MappingRules Azure " + MappingRulesFromAzure.length);
+			}
+		});
 	}
 
 	private static void BackendsCompareName() {
 
-		System.out.println("----- Verifica cuales existen en AZURE-----");
+		System.out.println("----- Verifica cuales BACKENDS existen en AZURE-----");
 		backendsFromAzure.forEach((k, v) -> {
 			if (backendFrom3Scale.get(k) == null)
 				System.err.println("no existe " + k + " en 3scale cluster");
 		});
-
-		System.out.println("----- Verifica cuales existen en CLUSTER-----");
+		System.out.println();
+		System.out.println("----- Verifica cuales BACKENDS existen en CLUSTER-----");
 		backendFrom3Scale.forEach((k, v) -> {
 			if (backendsFromAzure.get(k) == null)
 				System.err.println("no existe " + k + " en 3scale AZURE");
 		});
+		System.out.println();
 	}
 
 	private static void BackendsFromAzure() throws IOException {
@@ -81,15 +92,16 @@ public class Sincro3ScaleWhitAzure {
 		backends = ejecute(backends);
 		backends = clean(backends);
 		Map<String, Map<String, String>> backendUsages = new Gson().fromJson(backends, Map.class);
-
 		Set<String> backendUsageskeySet = backendUsages.keySet();
-		for (String k : backendUsageskeySet) {
-			String ejecute = ejecute("oc get backend " + k + " -o jsonpath='{.spec}'");
-//			if(k.equals("pmo1-api-aseautorizaciones-test"))
-			Spec spec = new Gson().fromJson(ejecute, Spec.class);
 
-//			Backend backend = mapperYAML.readValue("a"+ejecute, Backend.class);
-			backendFrom3Scale.put(k, spec);
+		for (String k : backendUsageskeySet) {
+
+			if (!k.equalsIgnoreCase(ignore)) {
+				System.out.println(k);
+				String ejecute = ejecute("oc get backend " + k + " -o jsonpath='{.spec}'");
+				Spec spec = new Gson().fromJson(clean(ejecute), Spec.class);
+				backendFrom3Scale.put(k, spec);
+			}
 		}
 
 	}
@@ -132,10 +144,11 @@ public class Sincro3ScaleWhitAzure {
 
 	private static String login() {
 //		ejecute(Main.login);
-		String token = "sha256~VjqmwcJRD9mI0dB0w3SnLqpXoRRzP0QRfT3clKiq58k";
+		String token = "sha256~sCoUCOT9clvhdIJBNf-InbSoUd9lnuWbHytl2NMErLI";
 		return ejecute("oc login --token=" + token + " --server=https://api.osnoprod01.aseconecta.com.ar:6443");
 	}
 
+	static final String ignore = "protesis-bff";
 	static Map<String, Spec> backendFrom3Scale = new HashMap<>();
 	private static Map<String, Backend> backendsFromAzure = new HashMap<String, Backend>();
 	private static final ObjectMapper mapperYAML = new ObjectMapper(new YAMLFactory());
