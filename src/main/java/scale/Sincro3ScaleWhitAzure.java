@@ -34,7 +34,7 @@ public class Sincro3ScaleWhitAzure {
 		System.out.println();
 		BackendsFrom3Scale();
 
-		System.out.println("----- Inicializa BackendsFrom3Scale -----");
+		System.out.println("----- Inicializa BackendsFromAzure -----");
 		System.out.println();
 		BackendsFromAzure();
 
