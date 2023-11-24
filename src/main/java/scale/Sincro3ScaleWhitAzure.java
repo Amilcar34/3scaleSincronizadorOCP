@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.gson.Gson;
 
+import helper.Progress;
 import model.Backend;
 import model.MappingRule;
 import model.Spec;
@@ -23,17 +24,18 @@ public class Sincro3ScaleWhitAzure {
 
 	private static final String NAMESPACE = "aseautorizaciones-test";
 	private static final String SCALE = "git@ssh.dev.azure.com:v3/ASEConecta/ASEAutorizaciones/3scale";
-	private static final String PWD_3SCALE = "/home/alberino_a/java/3scale";
-
+	private static final String PWD_3SCALE = "/home/alberino_a/java/3scale";	
+	
 	public static void main(String[] data) throws InterruptedException, IOException {
 
 		login();
 		ejecute("oc project 3scale");
 
 		System.out.println("----- Inicializa BackendsFrom3Scale -----");
-		System.out.println();
+		Progress.runner();
 		BackendsFrom3Scale();
-
+		Progress.stall();
+		
 		System.out.println("----- Inicializa BackendsFromAzure -----");
 		System.out.println();
 		BackendsFromAzure();
