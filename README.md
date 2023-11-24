@@ -1,6 +1,6 @@
 Las ejecuciones que se deseen hacer desde consola deben ser ejecutadas
 
-> mvn exec:java -Dexec.mainClass={PAQUETE}.{CLASE}
+> mvn exec:java -Dexec.mainClass={{PAQUETE}}.{{CLASE}}
 
 EJ:
 
