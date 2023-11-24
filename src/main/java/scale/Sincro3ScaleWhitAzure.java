@@ -214,7 +214,7 @@ public class Sincro3ScaleWhitAzure {
 
 	private static String login() {
 //		ejecute(Main.login);
-		String token = "sha256~sCoUCOT9clvhdIJBNf-InbSoUd9lnuWbHytl2NMErLI";
+		String token = "sha256~Cl8GUPDd2t14e7F4cusuxljFt9by_AjCBxDbMsP5wDc";
 		return ejecute("oc login --token=" + token + " --server=https://api.osnoprod01.aseconecta.com.ar:6443");
 	}
 
