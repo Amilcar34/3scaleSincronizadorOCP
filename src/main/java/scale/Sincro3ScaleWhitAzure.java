@@ -66,8 +66,8 @@ public class Sincro3ScaleWhitAzure {
 		
 		System.out.println("Check de uso de rutas publicas en 3scale");
 		backendFrom3Scale.forEach((k, v) -> {
-			boolean isService = v.getpublicBaseURL().contains(".svc.");
-			if(!isService) {
+			boolean isService = v.getpublicBaseURL().contains(".apps.osnoprod01.aseconecta.com.ar");
+			if(isService) {
 				System.err.println("WARNING: " + k + " del cluster expone una ruta publica: ");
 				System.out.println(v.getpublicBaseURL());
 			}
@@ -75,8 +75,8 @@ public class Sincro3ScaleWhitAzure {
 		System.out.println();
 		System.out.println("Check de uso de rutas publicas en Azure");
 		backendsFromAzure.forEach((k, v) -> {
-			boolean isService = v.getSpec().getpublicBaseURL().contains(".svc.");
-			if(!isService) {
+			boolean isService = v.getSpec().getpublicBaseURL().contains(".apps.osnoprod01.aseconecta.com.ar");
+			if(isService) {
 				System.err.println("WARNING: " + k + " del Azure expone una ruta publica: ");
 				System.out.println(v.getSpec().getpublicBaseURL());
 			}
