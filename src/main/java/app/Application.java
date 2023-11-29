@@ -8,8 +8,6 @@ public class Application {
 
 	//static String login = "oc login --token=sha256~u-3vty1p7FmsiSpFbuuaYMKmJrJqAFjnQrGMr1x1HPU --server=https://api.osnoprod01.aseconecta.com.ar:6443";
 
-	static String login = "oc login --token=sha256~5GY29gFrwPC9_nuE9r5hqjOWnW0N0fbuIgCd--OC1m8 --server=https://api.osnoprod01.aseconecta.com.ar:6443";
-	
 	public static void main(String[] data) throws InterruptedException, IOException {
 
 		login();
@@ -79,7 +77,7 @@ public class Application {
 
 	private static void login() {
 		try {
-			ejecute(login);
+			ejecute(Main.login);
 		} catch (InterruptedException | IOException e) {
 			e.printStackTrace();
 		}

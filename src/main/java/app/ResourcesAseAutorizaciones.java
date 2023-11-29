@@ -278,7 +278,7 @@ public class ResourcesAseAutorizaciones {
 	static Map<String, String> artefacttosTags = new HashMap<String, String>();
 
 	static {
-		artefacttosTags.put("autorizaciones-ui", "20231006172830-migracion-ocp4-bff-V1.6");
+		artefacttosTags.put("autorizaciones-ui", "20231128185441-migracion-ocp4-bff-V1.6");
 		artefacttosTags.put("autorizaciones-bff", "20231109113554-main");
 		artefacttosTags.put("openshift-activemq", "7.11.0-8");
 		artefacttosTags.put("alertas-api", "20231107150731-migracion-ocp4");
@@ -291,7 +291,7 @@ public class ResourcesAseAutorizaciones {
 		artefacttosTags.put("beneficiario-api", "20231114185437-migracion-ocp4-V1.5.5");
 		artefacttosTags.put("canal-api", "20231114125129-migracion-ocp4");
 		artefacttosTags.put("circuito-api", "20231108151227-migracion-ocp4");
-		artefacttosTags.put("documento-auditoria-api", "20231114150839-migracion-ocp4-V1.5.4");
+		artefacttosTags.put("documento-auditoria-api", "20231128160011-migracion-ocp4-V1.5.4");
 		artefacttosTags.put("documento-checklist-api", "20231109111155-migracion-ocp4-V1.5.1");
 		artefacttosTags.put("docu-check-legacy-api", "20231109112600-migracion-opc4-V1.5.1");
 		artefacttosTags.put("efecto-api", "20231116133426-migracion-ocp4");
@@ -311,7 +311,7 @@ public class ResourcesAseAutorizaciones {
 		artefacttosTags.put("pmo1-api", "20231113192717-migracion-ocp4");
 		artefacttosTags.put("reintegros-api", "20230920151142-migracion-ocp4-V1.7.0");
 		artefacttosTags.put("reintegros-bff", "20231012200755-725e49efebf477655e9fb5a9a0c9d570cd3bd48b");
-		artefacttosTags.put("reintegros-ui", "20231020135300-refactor-ocp4-V1.7.0");
+		artefacttosTags.put("reintegros-ui", "20231128135419-refactor-ocp4-V1.7.0");
 		artefacttosTags.put("sanatorio-api", "20231106205839-migracion-ocp4");
 
 	}
