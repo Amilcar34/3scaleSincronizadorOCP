@@ -87,8 +87,6 @@ public class Sincro3ScaleWhitAzure {
 		Set<String> backends = backendFrom3Scale.keySet();
 
 		backend: for (String backend : backends) {
-			if(backend.contains("alertas-api"))
-				System.out.println("---------------------------------------------------");
 			backend = backend.replace("test", "uat");
 			String command = "oc get backend " + backend + " -o jsonpath='{.status.conditions}'";
 			try {
