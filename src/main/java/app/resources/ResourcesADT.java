@@ -1,4 +1,4 @@
-package app;
+package app.resources;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,39 +8,40 @@ import java.util.List;
 
 import com.google.gson.Gson;
 
-import model.ReadinessProbe;
-import model.Resource;
+import app.Main;
+import app.model.ReadinessProbe;
+import app.model.Resource;
 
-public class ResourcesAsePrestadores {
+public class ResourcesADT {
 
-	static String namespace = "aseprestadores-test";
+	static String namespace = "auditoriaterreno-test";
 	public static void main(String[] data) throws InterruptedException, IOException {
 
 		login();
-		selectAsePrestadoresTest();
+		selectADTTest();
 		interateProject();
 		
 		System.out.println("----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ");
 		System.out.println("----- Incorrectos Por Recursos: " + incorrectosRecursos.size());
 		incorrectosRecursos.forEach(System.out::println);
 		
-		System.out.println("----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ");
-		System.out.println("----- Incorrectos Por ReadinessProbe: " + incorrectosReadinessProbe.size());
-		incorrectosReadinessProbe.forEach(System.out::println);
-		
-		System.out.println("----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ");
-		System.out.println("----- Incorrectos Por LivenessProbe: " + incorrectosLivenessProbe.size());
-		incorrectosLivenessProbe.forEach(System.out::println);
+//		System.out.println("----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ");
+//		System.out.println("----- Incorrectos Por ReadinessProbe: " + incorrectosReadinessProbe.size());
+//		incorrectosReadinessProbe.forEach(System.out::println);
+//		
+//		System.out.println("----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ");
+//		System.out.println("----- Incorrectos Por LivenessProbe: " + incorrectosLivenessProbe.size());
+//		incorrectosLivenessProbe.forEach(System.out::println);
 	}
 
 	private static void interateProject() {
 
 		iterateRecursos();
 		System.out.println("Finalizo el chequeo por recursos");
-		iterateReadinessProbe();
-		System.out.println("Finalizo el chequeo por ReadinessProbe");
-		iterateLivenessProbe();
-		System.out.println("Finalizo el chequeo por LivenessProbe");
+//		iterateReadinessProbe();
+//		System.out.println("Finalizo el chequeo por ReadinessProbe");
+//		iterateLivenessProbe();
+//		System.out.println("Finalizo el chequeo por LivenessProbe");
 	
 	}
 
@@ -64,7 +65,7 @@ public class ResourcesAsePrestadores {
 				incorrectosLivenessProbe.add(aplication);
 			} else {
 				ReadinessProbe resource = new Gson().fromJson(requests, ReadinessProbe.class);
-				if (resource.httpGet == null && resource.httpGet.path == null) {
+				if (resource.httpGet == null || resource.httpGet.path == null) {
 					System.err.print(namespace + " ");
 					System.out.println(aplication);
 					System.err.println("NO POSEE DATOS LivenessProbe");
@@ -119,7 +120,7 @@ public class ResourcesAsePrestadores {
 			limits = clean(ejecute(limits));
 			requests = clean(ejecute(requests));
 
-			if (requests.isBlank() || limits.isBlank()) {
+			if (requests.isBlank() && limits.isBlank()) {
 				System.err.print(namespace + " ");
 				System.out.println(aplication);
 				System.err.println("NO POSEE limite de recursos asignados");
@@ -194,7 +195,7 @@ public class ResourcesAsePrestadores {
 		return response.toString();
 	}
 
-	private static void selectAsePrestadoresTest() {
+	private static void selectADTTest() {
 		String command = "oc project " + namespace;
 		System.out.println(ejecute(command));
 	}

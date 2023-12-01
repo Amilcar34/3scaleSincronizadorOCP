@@ -1,8 +1,10 @@
-package app;
+package app.resources;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
+import app.Main;
 
 public class Application {
 

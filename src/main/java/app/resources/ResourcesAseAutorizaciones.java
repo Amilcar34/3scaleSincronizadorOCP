@@ -1,4 +1,4 @@
-package app;
+package app.resources;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,20 +10,21 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 
-import model.ReadinessProbe;
-import model.Resource;
+import app.Main;
+import app.model.ReadinessProbe;
+import app.model.Resource;
 
-public class ResourcesSIGO {
+public class ResourcesAseAutorizaciones {
 
-	static String namespace = "sigo-test";
+	static String namespace = "aseautorizaciones-test";
 
 	public static void main(String[] data) throws InterruptedException, IOException {
 
 		interateProject();
 
-//		System.out.println("----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ");
-//		System.out.println("----- Incorrectos Por Recursos: " + incorrectosRecursos.size());
-//		incorrectosRecursos.forEach(System.out::println);
+		System.out.println("----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ");
+		System.out.println("----- Incorrectos Por Recursos: " + incorrectosRecursos.size());
+		incorrectosRecursos.forEach(System.out::println);
 
 		System.out.println("----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ");
 		System.out.println("----- Incorrectos Por ReadinessProbe: " + incorrectosReadinessProbe.size());
@@ -53,11 +54,13 @@ public class ResourcesSIGO {
 		selectAseAutorizacionesTest();
 		iterateRecursos();
 		System.out.println("Finalizo el chequeo por recursos");
+		System.out.println();
 		iterateReadinessProbe();
 		System.out.println("Finalizo el chequeo por ReadinessProbe");
+		System.out.println();
 		iterateLivenessProbe();
 		System.out.println("Finalizo el chequeo por LivenessProbe");
-
+		System.out.println();
 	}
 
 	private static void iterateLivenessProbe() {
@@ -66,10 +69,11 @@ public class ResourcesSIGO {
 		String respuesta = ejecute(command);
 		String replaceAll = respuesta.replaceAll("\"", "");
 		String[] applicatios = replaceAll.split(" ");
+		System.out.println("--------------------LIVENESS PROBE -------");
 		for (String aplication : applicatios) {
 
 			String requests = "oc get deployments " + aplication
-					+ " -o jsonpath=\"{['spec.template.spec.containers'][0].readinessProbe}\"";
+					+ " -o jsonpath=\"{['spec.template.spec.containers'][0].livenessProbe}\"";
 
 			requests = clean(ejecute(requests));
 
@@ -83,27 +87,27 @@ public class ResourcesSIGO {
 				if (resource.httpGet == null || resource.httpGet.path == null) {
 					System.err.print(namespace + " ");
 					System.out.println(aplication);
-					System.err.println("NO POSEE DATOS readinessProbe");
+					System.err.println("NO POSEE DATOS LivenessProbe");
 					incorrectosLivenessProbe.add(aplication);
-				} else if (resource.initialDelaySeconds == 30) {
+				} else if (resource.initialDelaySeconds != 120) {
 					System.err.print(namespace + " ");
 					System.out.println(aplication);
-					System.err.println("initialDelaySeconds distinto de 30 : " + resource.initialDelaySeconds);
+					System.err.println("initialDelaySeconds distinto de 120 : " + resource.initialDelaySeconds);
 					incorrectosLivenessProbe.add(aplication);
-				} else if (resource.periodSeconds == 30) {
+				} else if (resource.periodSeconds != 30) {
 					System.err.print(namespace + " ");
 					System.out.println(aplication);
 					System.err.println("periodSeconds distinto de 30 : " + resource.periodSeconds);
 					incorrectosLivenessProbe.add(aplication);
-				} else if (resource.successThreshold == 1) {
+				} else if (resource.successThreshold != 1) {
 					System.err.print(namespace + " ");
 					System.out.println(aplication);
 					System.err.println("successThreshold distinto de 1 : " + resource.successThreshold);
 					incorrectosLivenessProbe.add(aplication);
-				} else if (resource.timeoutSeconds == 10) {
+				} else if (resource.timeoutSeconds != 30) {
 					System.err.print(namespace + " ");
 					System.out.println(aplication);
-					System.err.println("successThreshold distinto de 1 : " + resource.successThreshold);
+					System.err.println("timeoutSeconds distinto de 30 : " + resource.timeoutSeconds);
 					incorrectosLivenessProbe.add(aplication);
 				}
 			}
@@ -116,13 +120,13 @@ public class ResourcesSIGO {
 		String respuesta = ejecute(command);
 		String replaceAll = respuesta.replaceAll("\"", "");
 		String[] applicatios = replaceAll.split(" ");
+		System.out.println("--------------------READINESS PROBE -------");
 		for (String aplication : applicatios) {
 
 			String requests = "oc get deployments " + aplication
 					+ " -o jsonpath=\"{['spec.template.spec.containers'][0].readinessProbe}\"";
 
 			requests = clean(ejecute(requests));
-
 			if (requests.isBlank()) {
 				System.err.print(namespace + " ");
 				System.out.println(aplication);
@@ -135,25 +139,25 @@ public class ResourcesSIGO {
 					System.out.println(aplication);
 					System.err.println("NO POSEE DATOS readinessProbe");
 					incorrectosReadinessProbe.add(aplication);
-				} else if (resource.initialDelaySeconds == 30) {
+				} else if (resource.initialDelaySeconds != 120) {
 					System.err.print(namespace + " ");
 					System.out.println(aplication);
-					System.err.println("initialDelaySeconds distinto de 30 : " + resource.initialDelaySeconds);
+					System.err.println("initialDelaySeconds distinto de 120 : " + resource.initialDelaySeconds);
 					incorrectosReadinessProbe.add(aplication);
-				} else if (resource.periodSeconds == 60) {
+				} else if (resource.periodSeconds != 60) {
 					System.err.print(namespace + " ");
 					System.out.println(aplication);
 					System.err.println("periodSeconds distinto de 60 : " + resource.periodSeconds);
 					incorrectosReadinessProbe.add(aplication);
-				} else if (resource.successThreshold == 1) {
+				} else if (resource.successThreshold != 1) {
 					System.err.print(namespace + " ");
 					System.out.println(aplication);
 					System.err.println("successThreshold distinto de 1 : " + resource.successThreshold);
 					incorrectosReadinessProbe.add(aplication);
-				} else if (resource.timeoutSeconds == 10) {
+				} else if (resource.timeoutSeconds != 30) {
 					System.err.print(namespace + " ");
 					System.out.println(aplication);
-					System.err.println("successThreshold distinto de 1 : " + resource.successThreshold);
+					System.err.println("timeoutSeconds distinto de 30 : " + resource.timeoutSeconds);
 					incorrectosReadinessProbe.add(aplication);
 				}
 			}
@@ -165,8 +169,8 @@ public class ResourcesSIGO {
 		String command = "oc get deployments -o jsonpath=\"{.items[*]['metadata.name']}";
 		String respuesta = ejecute(command);
 		String replaceAll = respuesta.replaceAll("\"", "");
-		String[] applicatios = replaceAll.split(" ");
-		for (String aplication : applicatios) {
+//		String[] applicatios = replaceAll.split(" ");
+		for (String aplication : artefactos) {
 			String limits = "oc get deployments " + aplication
 					+ " -o jsonpath=\"{['spec.template.spec.containers'][0].resources.limits}\"";
 			String requests = "oc get deployments " + aplication
@@ -226,7 +230,7 @@ public class ResourcesSIGO {
 	}
 
 	private static String ejecute(String command) {
-
+System.out.println(command);
 		StringBuffer response = null;
 		try {
 			Process proc = Runtime.getRuntime().exec(command);
@@ -275,7 +279,7 @@ public class ResourcesSIGO {
 	static Map<String, String> artefacttosTags = new HashMap<String, String>();
 
 	static {
-		artefacttosTags.put("autorizaciones-ui", "20231006172830-migracion-ocp4-bff-V1.6");
+		artefacttosTags.put("autorizaciones-ui", "20231128185441-migracion-ocp4-bff-V1.6");
 		artefacttosTags.put("autorizaciones-bff", "20231109113554-main");
 		artefacttosTags.put("openshift-activemq", "7.11.0-8");
 		artefacttosTags.put("alertas-api", "20231107150731-migracion-ocp4");
@@ -288,7 +292,7 @@ public class ResourcesSIGO {
 		artefacttosTags.put("beneficiario-api", "20231114185437-migracion-ocp4-V1.5.5");
 		artefacttosTags.put("canal-api", "20231114125129-migracion-ocp4");
 		artefacttosTags.put("circuito-api", "20231108151227-migracion-ocp4");
-		artefacttosTags.put("documento-auditoria-api", "20231114150839-migracion-ocp4-V1.5.4");
+		artefacttosTags.put("documento-auditoria-api", "20231128160011-migracion-ocp4-V1.5.4");
 		artefacttosTags.put("documento-checklist-api", "20231109111155-migracion-ocp4-V1.5.1");
 		artefacttosTags.put("docu-check-legacy-api", "20231109112600-migracion-opc4-V1.5.1");
 		artefacttosTags.put("efecto-api", "20231116133426-migracion-ocp4");
@@ -308,7 +312,7 @@ public class ResourcesSIGO {
 		artefacttosTags.put("pmo1-api", "20231113192717-migracion-ocp4");
 		artefacttosTags.put("reintegros-api", "20230920151142-migracion-ocp4-V1.7.0");
 		artefacttosTags.put("reintegros-bff", "20231012200755-725e49efebf477655e9fb5a9a0c9d570cd3bd48b");
-		artefacttosTags.put("reintegros-ui", "20231020135300-refactor-ocp4-V1.7.0");
+		artefacttosTags.put("reintegros-ui", "20231128135419-refactor-ocp4-V1.7.0");
 		artefacttosTags.put("sanatorio-api", "20231106205839-migracion-ocp4");
 
 	}

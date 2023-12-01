@@ -1,4 +1,4 @@
-package app;
+package app.resources;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,17 +10,16 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 
-import model.ReadinessProbe;
-import model.Resource;
+import app.Main;
+import app.model.ReadinessProbe;
+import app.model.Resource;
 
-public class ResourcesAseVentas {
+public class ResourcesSIGO {
 
-	static String namespace = "aseventas-test";
+	static String namespace = "sigo-test";
 
 	public static void main(String[] data) throws InterruptedException, IOException {
 
-		login();
-		selectAseAutorizacionesTest();
 		interateProject();
 
 //		System.out.println("----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ");
@@ -40,7 +39,7 @@ public class ResourcesAseVentas {
 //		tags.forEach((k, v) -> System.out.println(k + " - " + v));
 //		System.out.println("----- Artefactos - tags Docuemnto: ");
 //		artefacttosTags.forEach((k, v) -> System.out.println(k + " - " + v));
-//
+
 //		System.out.println("----- Artefactos - tags DIFERENCIAS: ");
 //		artefacttosTags.forEach((k, v) -> {
 //			if (!tags.get(k).equals(v)) {
@@ -51,7 +50,8 @@ public class ResourcesAseVentas {
 	}
 
 	private static void interateProject() {
-
+		
+		selectAseAutorizacionesTest();
 		iterateRecursos();
 		System.out.println("Finalizo el chequeo por recursos");
 		iterateReadinessProbe();
@@ -70,7 +70,7 @@ public class ResourcesAseVentas {
 		for (String aplication : applicatios) {
 
 			String requests = "oc get deployments " + aplication
-					+ " -o jsonpath=\"{['spec.template.spec.containers'][0].livenessProbe}\"";
+					+ " -o jsonpath=\"{['spec.template.spec.containers'][0].readinessProbe}\"";
 
 			requests = clean(ejecute(requests));
 
@@ -86,22 +86,22 @@ public class ResourcesAseVentas {
 					System.out.println(aplication);
 					System.err.println("NO POSEE DATOS readinessProbe");
 					incorrectosLivenessProbe.add(aplication);
-				} else if (resource.initialDelaySeconds != 30) {
+				} else if (resource.initialDelaySeconds == 30) {
 					System.err.print(namespace + " ");
 					System.out.println(aplication);
 					System.err.println("initialDelaySeconds distinto de 30 : " + resource.initialDelaySeconds);
 					incorrectosLivenessProbe.add(aplication);
-				} else if (resource.periodSeconds != 30) {
+				} else if (resource.periodSeconds == 30) {
 					System.err.print(namespace + " ");
 					System.out.println(aplication);
 					System.err.println("periodSeconds distinto de 30 : " + resource.periodSeconds);
 					incorrectosLivenessProbe.add(aplication);
-				} else if (resource.successThreshold != 1) {
+				} else if (resource.successThreshold == 1) {
 					System.err.print(namespace + " ");
 					System.out.println(aplication);
 					System.err.println("successThreshold distinto de 1 : " + resource.successThreshold);
 					incorrectosLivenessProbe.add(aplication);
-				} else if (resource.timeoutSeconds != 10) {
+				} else if (resource.timeoutSeconds == 10) {
 					System.err.print(namespace + " ");
 					System.out.println(aplication);
 					System.err.println("successThreshold distinto de 1 : " + resource.successThreshold);
@@ -136,22 +136,22 @@ public class ResourcesAseVentas {
 					System.out.println(aplication);
 					System.err.println("NO POSEE DATOS readinessProbe");
 					incorrectosReadinessProbe.add(aplication);
-				} else if (resource.initialDelaySeconds != 30) {
+				} else if (resource.initialDelaySeconds == 30) {
 					System.err.print(namespace + " ");
 					System.out.println(aplication);
 					System.err.println("initialDelaySeconds distinto de 30 : " + resource.initialDelaySeconds);
 					incorrectosReadinessProbe.add(aplication);
-				} else if (resource.periodSeconds != 60) {
+				} else if (resource.periodSeconds == 60) {
 					System.err.print(namespace + " ");
 					System.out.println(aplication);
 					System.err.println("periodSeconds distinto de 60 : " + resource.periodSeconds);
 					incorrectosReadinessProbe.add(aplication);
-				} else if (resource.successThreshold != 1) {
+				} else if (resource.successThreshold == 1) {
 					System.err.print(namespace + " ");
 					System.out.println(aplication);
 					System.err.println("successThreshold distinto de 1 : " + resource.successThreshold);
 					incorrectosReadinessProbe.add(aplication);
-				} else if (resource.timeoutSeconds != 10) {
+				} else if (resource.timeoutSeconds == 10) {
 					System.err.print(namespace + " ");
 					System.out.println(aplication);
 					System.err.println("successThreshold distinto de 1 : " + resource.successThreshold);
@@ -250,6 +250,7 @@ public class ResourcesAseVentas {
 	}
 
 	private static void selectAseAutorizacionesTest() {
+		login();
 		String command = "oc project " + namespace;
 		System.out.println(ejecute(command));
 	}
@@ -260,6 +261,14 @@ public class ResourcesAseVentas {
 		return ejecute.substring(0, --lengt);
 	}
 
+	static String[] artefactos = new String[] { "autorizaciones-ui", "autorizaciones-bff", "openshift-activemq",
+			"alertas-api", "aprobaciones-api", "ase-numera-api", "auditor-api", "auth-api", "autorizacion-api",
+			"autorizaciones-brokermq-api", "beneficiario-api", "canal-api", "circuito-api", "documento-auditoria-api",
+			"documento-checklist-api", "docu-check-legacy-api", "efecto-api", "empresa-api", "enfermedades-api",
+			"filial-api", "frecuencia-api", "historial-api", "jwt-api", "jwt-validator-api", "legacy-manager-api",
+			"medicamento-api", "medicos-api", "nomenclador-api", "notificaciones-api", "parametria-api", "pmo1-api",
+			"reintegros-api", "reintegros-bff", "reintegros-ui", "sanatorio-api" };
+
 	static Map<String, String> tags = new HashMap<String, String>();
 	static List<String> incorrectosRecursos = new ArrayList<String>();
 	static List<String> incorrectosReadinessProbe = new ArrayList<String>();
@@ -267,7 +276,41 @@ public class ResourcesAseVentas {
 	static Map<String, String> artefacttosTags = new HashMap<String, String>();
 
 	static {
-
+		artefacttosTags.put("autorizaciones-ui", "20231006172830-migracion-ocp4-bff-V1.6");
+		artefacttosTags.put("autorizaciones-bff", "20231109113554-main");
+		artefacttosTags.put("openshift-activemq", "7.11.0-8");
+		artefacttosTags.put("alertas-api", "20231107150731-migracion-ocp4");
+		artefacttosTags.put("aprobaciones-api", "20231114163801-migracion-ocp4-V1.5.5");
+		artefacttosTags.put("ase-numera-api", "20231107132637-migracion-ocp4");
+		artefacttosTags.put("auditor-api", "20231107193410-migracion-ocp4-1.0.0");
+		artefacttosTags.put("auth-api", "20231107192042-migracion-ocp4-V1.5");
+		artefacttosTags.put("autorizacion-api", "20231108132503-migracion-ocp4-V1.5");
+		artefacttosTags.put("autorizaciones-brokermq-api", "20231114135818-migracion-ocp4-noupgrade");
+		artefacttosTags.put("beneficiario-api", "20231114185437-migracion-ocp4-V1.5.5");
+		artefacttosTags.put("canal-api", "20231114125129-migracion-ocp4");
+		artefacttosTags.put("circuito-api", "20231108151227-migracion-ocp4");
+		artefacttosTags.put("documento-auditoria-api", "20231114150839-migracion-ocp4-V1.5.4");
+		artefacttosTags.put("documento-checklist-api", "20231109111155-migracion-ocp4-V1.5.1");
+		artefacttosTags.put("docu-check-legacy-api", "20231109112600-migracion-opc4-V1.5.1");
+		artefacttosTags.put("efecto-api", "20231116133426-migracion-ocp4");
+		artefacttosTags.put("empresa-api", "20231109124143-migracion-ocp4");
+		artefacttosTags.put("enfermedades-api", "20231109122932-migracion-ocp4");
+		artefacttosTags.put("filial-api", "20231109121906-migracion-ocp4");
+		artefacttosTags.put("frecuencia-api", "20231109120757-migracion-ocp4");
+		artefacttosTags.put("historial-api", "20231109115249-migracion-ocp4");
+		artefacttosTags.put("jwt-api", "20231108152930-migracion-ocp4");
+		artefacttosTags.put("jwt-validator-api", "20231108150734-migracion-ocp4");
+		artefacttosTags.put("legacy-manager-api", "20231108145232-migracion-ocp4-V1.5.2");
+		artefacttosTags.put("medicamento-api", "20231108123312-migracion-ocp4");
+		artefacttosTags.put("medicos-api", "20231107175801-migracion-ocp4");
+		artefacttosTags.put("nomenclador-api", "20231012172853-migracion-ocp4-V1.2.24");
+		artefacttosTags.put("notificaciones-api", "20231107171042-migracion-ocp4-V1.5.1");
+		artefacttosTags.put("parametria-api", "20230929172134-migracion-ocp4");
+		artefacttosTags.put("pmo1-api", "20231113192717-migracion-ocp4");
+		artefacttosTags.put("reintegros-api", "20230920151142-migracion-ocp4-V1.7.0");
+		artefacttosTags.put("reintegros-bff", "20231012200755-725e49efebf477655e9fb5a9a0c9d570cd3bd48b");
+		artefacttosTags.put("reintegros-ui", "20231020135300-refactor-ocp4-V1.7.0");
+		artefacttosTags.put("sanatorio-api", "20231106205839-migracion-ocp4");
 
 	}
 }

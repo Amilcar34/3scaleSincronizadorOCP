@@ -1,4 +1,4 @@
-package scale;
+package app.scale;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,17 +15,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.gson.Gson;
 
-import helper.Progress;
-import model.Backend;
-import model.MappingRule;
-import model.Spec;
+import app.Main;
+import app.helper.Progress;
+import app.model.Backend;
+import app.model.Condition;
+import app.model.MappingRule;
+import app.model.Spec;
+import app.model.Status;
+import app.model.Type;
 
 public class Sincro3ScaleWhitAzure {
 
 	private static final String NAMESPACE = "aseautorizaciones-test";
 	private static final String SCALE = "git@ssh.dev.azure.com:v3/ASEConecta/ASEAutorizaciones/3scale";
-	private static final String PWD_3SCALE = "/home/alberino_a/java/3scale";	
-	
+	private static final String PWD_3SCALE = "/home/alberino_a/java/3scale";
+
 	public static void main(String[] data) throws InterruptedException, IOException {
 
 		login();
@@ -35,7 +39,7 @@ public class Sincro3ScaleWhitAzure {
 		Progress.runner();
 		BackendsFrom3Scale();
 		Progress.stall();
-		
+
 		System.out.println("----- Inicializa BackendsFromAzure -----");
 		System.out.println();
 		BackendsFromAzure();
@@ -60,16 +64,74 @@ public class Sincro3ScaleWhitAzure {
 		System.out.println();
 		CheckPrivateBaseURL();
 
+		System.out.println("----- Check backend status TEST-----");
+		System.out.println();
+		Progress.runner();
+		CheckBackendStatusTest();
+		Progress.stall();
+
+		System.out.println("----- Check backend status UAT-----");
+		System.out.println();
+		CheckBackendStatusUAT();
+
+		// oc get backend alertas-api-aseautorizaciones-test -o jsonpath='{.status}'
+		// oc get backend alertas-api-aseautorizaciones-uat -o jsonpath='{.status}'
+
+		// type -> status
 		System.out.println("----- FIN -----");
 
 	}
 
+	private static void CheckBackendStatusUAT() {
+		Gson gson = Main.getGsonCondition();
+		Set<String> backends = backendFrom3Scale.keySet();
+
+		backend: for (String backend : backends) {
+			if(backend.contains("alertas-api"))
+				System.out.println("---------------------------------------------------");
+			backend = backend.replace("test", "uat");
+			String command = "oc get backend " + backend + " -o jsonpath='{.status.conditions}'";
+			try {
+				String ejecute = ejecute(command);
+				Condition[] conditions = gson.fromJson(clean(ejecute), Condition[].class);
+				System.out.println(command);
+				for (Condition condition : conditions) {
+					if (condition.type.equals(Type.Synced))
+						if (condition.status.equals(Status.True))
+							continue backend;
+				}
+				System.err.println("ERROR: condition " + backend);
+			} catch (NegativeArraySizeException e) {
+				System.err.println("FALLO: " + backend);
+				System.err.println(command);
+			}
+		}
+	}
+
+	private static void CheckBackendStatusTest() {
+
+		Gson gson = Main.getGsonCondition();
+		Set<String> backends = backendFrom3Scale.keySet();
+
+		backend: for (String backend : backends) {
+			String ejecute = ejecute("oc get backend " + backend + " -o jsonpath='{.status.conditions}'");
+			Condition[] conditions = gson.fromJson(clean(ejecute), Condition[].class);
+			for (Condition condition : conditions) {
+				if (condition.type.equals(Type.Synced))
+					if (condition.status.equals(Status.True))
+						continue backend;
+			}
+			System.err.println("ERROR: condition " + backend);
+		}
+
+	}
+
 	private static void CheckPrivateBaseURL() {
-		
+
 		System.out.println("Check de uso de rutas publicas en 3scale");
 		backendFrom3Scale.forEach((k, v) -> {
 			boolean isService = v.getpublicBaseURL().contains(".apps.osnoprod01.aseconecta.com.ar");
-			if(isService) {
+			if (isService) {
 				System.err.println("WARNING: " + k + " del cluster expone una ruta publica: ");
 				System.out.println(v.getpublicBaseURL());
 			}
@@ -78,7 +140,7 @@ public class Sincro3ScaleWhitAzure {
 		System.out.println("Check de uso de rutas publicas en Azure");
 		backendsFromAzure.forEach((k, v) -> {
 			boolean isService = v.getSpec().getpublicBaseURL().contains(".apps.osnoprod01.aseconecta.com.ar");
-			if(isService) {
+			if (isService) {
 				System.err.println("WARNING: " + k + " del Azure expone una ruta publica: ");
 				System.out.println(v.getSpec().getpublicBaseURL());
 			}
@@ -86,7 +148,7 @@ public class Sincro3ScaleWhitAzure {
 	}
 
 	private static void CompareContentMappingRulesFrom3Scale() {
-		
+
 		backendFrom3Scale.forEach((k, v) -> {
 			MappingRule[] MappingRulesFromAzure = backendsFromAzure.get(k).getSpec().getMappingRules();
 			MappingRule[] MappingRulesFrom3Scale = v.getMappingRules();
@@ -97,7 +159,7 @@ public class Sincro3ScaleWhitAzure {
 					if (from3Scale.equals(fromAzure))
 						exist = true;
 				}
-				if(!exist)
+				if (!exist)
 					System.err.println(k + " falta " + from3Scale + " en Azure");
 			}
 		});
@@ -115,7 +177,7 @@ public class Sincro3ScaleWhitAzure {
 					if (from3Scale.equals(fromAzure))
 						exist = true;
 				}
-				if(!exist)
+				if (!exist)
 					System.err.println(k + " falta " + fromAzure + " en 3scale");
 			}
 		});
@@ -215,9 +277,9 @@ public class Sincro3ScaleWhitAzure {
 	}
 
 	private static String login() {
-//		ejecute(Main.login);
-		String token = "sha256~Cl8GUPDd2t14e7F4cusuxljFt9by_AjCBxDbMsP5wDc";
-		return ejecute("oc login --token=" + token + " --server=https://api.osnoprod01.aseconecta.com.ar:6443");
+		return ejecute(Main.login);
+//		String token = "sha256~Cl8GUPDd2t14e7F4cusuxljFt9by_AjCBxDbMsP5wDc";
+//		return ejecute("oc login --token=" + token + " --server=https://api.osnoprod01.aseconecta.com.ar:6443");
 	}
 
 	static final String ignore = "protesis-bff";

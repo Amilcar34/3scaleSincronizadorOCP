@@ -1,17 +1,18 @@
-package helper;
+package app.helper;
 
 import java.lang.Thread;
 
 public class Progress extends Thread {
 
 	private static char[] loading = new char[] { '|', '/', '-', '\\' };
-	private final static Thread progress = new Thread(new Progress());
+	private static Thread progress = new Thread(new Progress());
 
 	private Progress() {
 		super.setDaemon(true);
 	}
 
 	public static void runner() {
+		progress = new Thread(new Progress());
 		progress.start();
 	}
 
