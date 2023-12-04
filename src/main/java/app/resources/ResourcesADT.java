@@ -38,15 +38,15 @@ public class ResourcesADT {
 		System.out.println("----- Artefactos - tags OCP4: ");
 		tags.forEach((k, v) -> System.out.println(k + " - " + v));
 
-		System.out.println("----- Artefactos - tags Docuemnto: ");
-		artefacttosTags.forEach((k, v) -> System.out.println(k + " - " + v));
+//		System.out.println("----- Artefactos - tags Docuemnto: ");
+//		artefacttosTags.forEach((k, v) -> System.out.println(k + " - " + v));
 		
-		System.out.println("----- Artefactos - tags DIFERENCIAS: ");
-		artefacttosTags.forEach((k, v) -> {
-			if (!tags.get(k).equals(v)) {
-				System.out.println(k);
-			}
-		});
+//		System.out.println("----- Artefactos - tags DIFERENCIAS: ");
+//		artefacttosTags.forEach((k, v) -> {
+//			if (!tags.get(k).equals(v)) {
+//				System.out.println(k);
+//			}
+//		});
 
 	}
 
@@ -278,39 +278,39 @@ public class ResourcesADT {
 	static List<String> incorrectosRecursos = new ArrayList<String>();
 	static List<String> incorrectosReadinessProbe = new ArrayList<String>();
 	static List<String> incorrectosLivenessProbe = new ArrayList<String>();
-	static Map<String, String> artefacttosTags = new HashMap<String, String>();
+	static Map<String, String> artefactosTags = new HashMap<String, String>();
 
 	static {
-		artefacttosTags.put("amq-broker-jdbc", "");
-		artefacttosTags.put("apicast-redis", "");
-		artefacttosTags.put("archivos-api", "");
-		artefacttosTags.put("archivos-ui", "");
-		artefacttosTags.put("auditorias-api", "");
-		artefacttosTags.put("autorizaciones-api", "");
-		artefacttosTags.put("autorizaciones-ui", "");
-		artefacttosTags.put("bff-autorizaciones", "");
-		artefacttosTags.put("camdoctor-api", "");
-		artefacttosTags.put("casos-api", "");
-		artefacttosTags.put("diagnosticos-api", "");
-		artefacttosTags.put("especialidades-api", "");
-		artefacttosTags.put("gestion-api", "");
-		artefacttosTags.put("informes-api", "");
-		artefacttosTags.put("instituciones-api", "");
-		artefacttosTags.put("legacy-asociado-api", "");
-		artefacttosTags.put("legacy-liquidaciones-api", "");
-		artefacttosTags.put("legacy-medicamentos-api", "");
-		artefacttosTags.put("legacy-prestadores-api", "");
-		artefacttosTags.put("lifia-integracion-api", "");
-		artefacttosTags.put("practicas-api", "");
-		artefacttosTags.put("prestaciones-broker", "");
-		artefacttosTags.put("prestaciones-ui", "");
-		artefacttosTags.put("prestadores-api", "");
-		artefacttosTags.put("profesionales-api", "");
-		artefacttosTags.put("proxy-prestaciones", "");
-		artefacttosTags.put("proxy-reverso-api", "");
-		artefacttosTags.put("reportes-api", "");
-		artefacttosTags.put("sesion-api", "");
-		artefacttosTags.put("som-integracion-api", "");
+		artefactosTags.put("amq-broker-jdbc", "");
+		artefactosTags.put("apicast-redis", "");
+		artefactosTags.put("archivos-api", "");
+		artefactosTags.put("archivos-ui", "");
+		artefactosTags.put("auditorias-api", "");
+		artefactosTags.put("autorizaciones-api", "");
+		artefactosTags.put("autorizaciones-ui", "");
+		artefactosTags.put("bff-autorizaciones", "");
+		artefactosTags.put("camdoctor-api", "");
+		artefactosTags.put("casos-api", "");
+		artefactosTags.put("diagnosticos-api", "");
+		artefactosTags.put("especialidades-api", "");
+		artefactosTags.put("gestion-api", "");
+		artefactosTags.put("informes-api", "");
+		artefactosTags.put("instituciones-api", "");
+		artefactosTags.put("legacy-asociado-api", "");
+		artefactosTags.put("legacy-liquidaciones-api", "");
+		artefactosTags.put("legacy-medicamentos-api", "");
+		artefactosTags.put("legacy-prestadores-api", "");
+		artefactosTags.put("lifia-integracion-api", "");
+		artefactosTags.put("practicas-api", "");
+		artefactosTags.put("prestaciones-broker", "");
+		artefactosTags.put("prestaciones-ui", "");
+		artefactosTags.put("prestadores-api", "");
+		artefactosTags.put("profesionales-api", "");
+		artefactosTags.put("proxy-prestaciones", "");
+		artefactosTags.put("proxy-reverso-api", "");
+		artefactosTags.put("reportes-api", "");
+		artefactosTags.put("sesion-api", "");
+		artefactosTags.put("som-integracion-api", "");
 
 	}
 }
