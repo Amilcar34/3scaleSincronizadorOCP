@@ -50,8 +50,8 @@ public class ResourcesAseAutorizaciones {
 	}
 
 	private static void interateProject() {
-		
-		selectAseAutorizacionesTest();
+
+		selectNamespaceTest();
 		iterateRecursos();
 		System.out.println("Finalizo el chequeo por recursos");
 		System.out.println();
@@ -65,7 +65,7 @@ public class ResourcesAseAutorizaciones {
 
 	private static void iterateLivenessProbe() {
 
-		String command = "oc get deployments -o jsonpath=\"{.items[*]['metadata.name']}\"\n";
+		String command = "oc get deployments -o jsonpath=\"{.items[*]['metadata.name']}\"";
 		String respuesta = ejecute(command);
 		String replaceAll = respuesta.replaceAll("\"", "");
 		String[] applicatios = replaceAll.split(" ");
@@ -166,10 +166,10 @@ public class ResourcesAseAutorizaciones {
 
 	private static void iterateRecursos() {
 
-		String command = "oc get deployments -o jsonpath=\"{.items[*]['metadata.name']}";
+		String command = "oc get deployments -o jsonpath=\"{.items[*]['metadata.name']}\"";
 		String respuesta = ejecute(command);
 		String replaceAll = respuesta.replaceAll("\"", "");
-//		String[] applicatios = replaceAll.split(" ");
+		String[] artefactos = replaceAll.split(" ");
 		for (String aplication : artefactos) {
 			String limits = "oc get deployments " + aplication
 					+ " -o jsonpath=\"{['spec.template.spec.containers'][0].resources.limits}\"";
@@ -204,6 +204,7 @@ public class ResourcesAseAutorizaciones {
 	}
 
 	private static void setTags(String aplication) {
+		
 		String image = "oc get deployments " + aplication
 				+ " -o jsonpath=\"{['spec.template.spec.containers'][0].image}\"";
 		image = ejecute(image);
@@ -230,7 +231,7 @@ public class ResourcesAseAutorizaciones {
 	}
 
 	private static String ejecute(String command) {
-System.out.println(command);
+//		System.out.println(command);
 		StringBuffer response = null;
 		try {
 			Process proc = Runtime.getRuntime().exec(command);
@@ -252,7 +253,7 @@ System.out.println(command);
 		return response.toString();
 	}
 
-	private static void selectAseAutorizacionesTest() {
+	private static void selectNamespaceTest() {
 		login();
 		String command = "oc project " + namespace;
 		System.out.println(ejecute(command));

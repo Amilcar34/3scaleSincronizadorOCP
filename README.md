@@ -4,4 +4,4 @@ Las ejecuciones que se deseen hacer desde consola deben ser ejecutadas
 
 EJ:
 
-> mvn exec:java -Dexec.mainClass=scale.Sincro3ScaleWhitAzure
+> mvn exec:java -Dexec.mainClass=app.scale.Sincro3ScaleWhitAzure
