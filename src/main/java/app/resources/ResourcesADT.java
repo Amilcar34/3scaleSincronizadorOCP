@@ -1,316 +1,61 @@
 package app.resources;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import com.google.gson.Gson;
-
-import app.Main;
-import app.model.ReadinessProbe;
-import app.model.Resource;
+import app.Resources;
 
 public class ResourcesADT {
 
 	static String namespace = "auditoriaterreno-test";
+	static boolean useArtefactosDinamicos = false;
 
 	public static void main(String[] data) throws InterruptedException, IOException {
 
-		interateProject();
-
-		System.out.println("----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ");
-		System.out.println("----- Incorrectos Por Recursos: " + incorrectosRecursos.size());
-		incorrectosRecursos.forEach(System.out::println);
-
-		System.out.println("----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ");
-		System.out.println("----- Incorrectos Por ReadinessProbe: " + incorrectosReadinessProbe.size());
-		incorrectosReadinessProbe.forEach(System.out::println);
-
-		System.out.println("----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ");
-		System.out.println("----- Incorrectos Por LivenessProbe: " + incorrectosLivenessProbe.size());
-		incorrectosLivenessProbe.forEach(System.out::println);
-
-		System.out.println("----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ");
-		System.out.println("----- Artefactos - tags OCP4: ");
-		tags.forEach((k, v) -> System.out.println(k + " - " + v));
-
-//		System.out.println("----- Artefactos - tags Docuemnto: ");
-//		artefacttosTags.forEach((k, v) -> System.out.println(k + " - " + v));
+		new Resources(namespace, useArtefactosDinamicos, artefactosTags, artefactos).star();
 		
-//		System.out.println("----- Artefactos - tags DIFERENCIAS: ");
-//		artefacttosTags.forEach((k, v) -> {
-//			if (!tags.get(k).equals(v)) {
-//				System.out.println(k);
-//			}
-//		});
-
 	}
+	
+	static String[] artefactos = new String[] { "auditorias-api", "prestaciones-ui", "proxy-prestaciones",
+			"archivos-ui", "casos-api", "especialidades-api", "diagnosticos-api", "legacy-medicamentos-api",
+			"practicas-api", "profesionales-api", "gestion-api", "informes-api", "instituciones-api",
+			"legacy-liquidaciones-api", "legacy-prestadores-api", "prestaciones-ui", "prestadores-api", "reportes-api",
+			"proxy-reverso-api", "sesion-api", "archivos-api", "camdoctor-api" };
 
-	private static void interateProject() {
-
-		selectNamespaceTest();
-		iterateRecursos();
-		System.out.println("Finalizo el chequeo por recursos");
-		System.out.println();
-		iterateReadinessProbe();
-		System.out.println("Finalizo el chequeo por ReadinessProbe");
-		System.out.println();
-		iterateLivenessProbe();
-		System.out.println("Finalizo el chequeo por LivenessProbe");
-		System.out.println();
-	}
-
-	private static void iterateLivenessProbe() {
-
-		String command = "oc get deployments -o jsonpath=\"{.items[*]['metadata.name']}\"";
-		String respuesta = ejecute(command);
-		String replaceAll = respuesta.replaceAll("\"", "");
-		String[] applicatios = replaceAll.split(" ");
-		System.out.println("--------------------LIVENESS PROBE -------");
-		for (String aplication : applicatios) {
-
-			String requests = "oc get deployments " + aplication
-					+ " -o jsonpath=\"{['spec.template.spec.containers'][0].livenessProbe}\"";
-
-			requests = clean(ejecute(requests));
-
-			if (requests.isBlank()) {
-				System.err.print(namespace + " ");
-				System.out.println(aplication);
-				System.err.println("NO POSEE LivenessProbe");
-				incorrectosLivenessProbe.add(aplication);
-			} else {
-				ReadinessProbe resource = new Gson().fromJson(requests, ReadinessProbe.class);
-				if (resource.httpGet == null || resource.httpGet.path == null) {
-					System.err.print(namespace + " ");
-					System.out.println(aplication);
-					System.err.println("NO POSEE DATOS LivenessProbe");
-					incorrectosLivenessProbe.add(aplication);
-				} else if (resource.initialDelaySeconds != 120) {
-					System.err.print(namespace + " ");
-					System.out.println(aplication);
-					System.err.println("initialDelaySeconds distinto de 120 : " + resource.initialDelaySeconds);
-					incorrectosLivenessProbe.add(aplication);
-				} else if (resource.periodSeconds != 30) {
-					System.err.print(namespace + " ");
-					System.out.println(aplication);
-					System.err.println("periodSeconds distinto de 30 : " + resource.periodSeconds);
-					incorrectosLivenessProbe.add(aplication);
-				} else if (resource.successThreshold != 1) {
-					System.err.print(namespace + " ");
-					System.out.println(aplication);
-					System.err.println("successThreshold distinto de 1 : " + resource.successThreshold);
-					incorrectosLivenessProbe.add(aplication);
-				} else if (resource.timeoutSeconds != 30) {
-					System.err.print(namespace + " ");
-					System.out.println(aplication);
-					System.err.println("timeoutSeconds distinto de 30 : " + resource.timeoutSeconds);
-					incorrectosLivenessProbe.add(aplication);
-				}
-			}
-		}
-	}
-
-	private static void iterateReadinessProbe() {
-
-		String command = "oc get deployments -o jsonpath=\"{.items[*]['metadata.name']}\"\n";
-		String respuesta = ejecute(command);
-		String replaceAll = respuesta.replaceAll("\"", "");
-		String[] applicatios = replaceAll.split(" ");
-		System.out.println("--------------------READINESS PROBE -------");
-		for (String aplication : applicatios) {
-
-			String requests = "oc get deployments " + aplication
-					+ " -o jsonpath=\"{['spec.template.spec.containers'][0].readinessProbe}\"";
-
-			requests = clean(ejecute(requests));
-			if (requests.isBlank()) {
-				System.err.print(namespace + " ");
-				System.out.println(aplication);
-				System.err.println("NO POSEE readinessProbe");
-				incorrectosReadinessProbe.add(aplication);
-			} else {
-				ReadinessProbe resource = new Gson().fromJson(requests, ReadinessProbe.class);
-				if (resource.httpGet == null || resource.httpGet.path == null) {
-					System.err.print(namespace + " ");
-					System.out.println(aplication);
-					System.err.println("NO POSEE DATOS readinessProbe");
-					incorrectosReadinessProbe.add(aplication);
-				} else if (resource.initialDelaySeconds != 120) {
-					System.err.print(namespace + " ");
-					System.out.println(aplication);
-					System.err.println("initialDelaySeconds distinto de 120 : " + resource.initialDelaySeconds);
-					incorrectosReadinessProbe.add(aplication);
-				} else if (resource.periodSeconds != 60) {
-					System.err.print(namespace + " ");
-					System.out.println(aplication);
-					System.err.println("periodSeconds distinto de 60 : " + resource.periodSeconds);
-					incorrectosReadinessProbe.add(aplication);
-				} else if (resource.successThreshold != 1) {
-					System.err.print(namespace + " ");
-					System.out.println(aplication);
-					System.err.println("successThreshold distinto de 1 : " + resource.successThreshold);
-					incorrectosReadinessProbe.add(aplication);
-				} else if (resource.timeoutSeconds != 30) {
-					System.err.print(namespace + " ");
-					System.out.println(aplication);
-					System.err.println("timeoutSeconds distinto de 30 : " + resource.timeoutSeconds);
-					incorrectosReadinessProbe.add(aplication);
-				}
-			}
-		}
-	}
-
-	private static void iterateRecursos() {
-
-		String command = "oc get deployments -o jsonpath=\"{.items[*]['metadata.name']}\"";
-		String respuesta = ejecute(command);
-		String replaceAll = respuesta.replaceAll("\"", "");
-		String[] artefactos = replaceAll.split(" ");
-		for (String aplication : artefactos) {
-			String limits = "oc get deployments " + aplication
-					+ " -o jsonpath=\"{['spec.template.spec.containers'][0].resources.limits}\"";
-			String requests = "oc get deployments " + aplication
-					+ " -o jsonpath=\"{['spec.template.spec.containers'][0].resources.requests}\"";
-
-			setTags(aplication);
-			limits = clean(ejecute(limits));
-			requests = clean(ejecute(requests));
-
-			if (requests.isBlank() || limits.isBlank()) {
-				System.err.print(namespace + " ");
-				System.out.println(aplication);
-				System.err.println("NO POSEE limite de recursos asignados");
-				incorrectosRecursos.add(aplication);
-			} else {
-				Resource resource = new Gson().fromJson(requests, Resource.class);
-				if (resource.getCpu().endsWith("m") && resource.getCpu().startsWith("10")) {
-
-				} else if (resource.getCpu().endsWith("m")) {
-					int intResource = extracted(resource);
-					if (intResource > 10) {
-						System.err.print(namespace + " ");
-						System.out.println(aplication);
-						System.out.println(requests);
-						incorrectosRecursos.add(aplication);
-					}
-				}
-
-			}
-		}
-	}
-
-	private static void setTags(String aplication) {
-
-		String image = "oc get deployments " + aplication
-				+ " -o jsonpath=\"{['spec.template.spec.containers'][0].image}\"";
-		image = ejecute(image);
-		int length = image.length();
-		image = image.substring(image.lastIndexOf(":"), length);
-		length = image.length();
-		--length;
-		image = image.substring(1, --length);
-		tags.put(aplication, image);
-	}
-
-	private static int extracted(Resource resource) {
-		int intResource = 0;
-		try {
-			intResource = Integer.valueOf(resource.getCpu().replaceAll("[^-?0-9]+", ""));
-		} catch (NumberFormatException e) {
-			System.err.print("Error: " + resource.getCpu());
-		}
-		return intResource;
-	}
-
-	private static void login() {
-		ejecute(Main.login);
-	}
-
-	private static String ejecute(String command) {
-//		System.out.println(command);
-		StringBuffer response = null;
-		try {
-			Process proc = Runtime.getRuntime().exec(command);
-
-			BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-
-			response = new StringBuffer(reader.read());
-			String line = "";
-			while ((line = reader.readLine()) != null) {
-				response.append(line + "\n");
-			}
-			proc.waitFor();
-
-		} catch (IOException | InterruptedException e) {
-			System.err.println("Error al ejecutar");
-			System.err.println(command);
-			e.printStackTrace();
-		}
-		return response.toString();
-	}
-
-	private static void selectNamespaceTest() {
-		login();
-		String command = "oc project " + namespace;
-		System.out.println(ejecute(command));
-	}
-
-	private static String clean(String ejecute) {
-		int lengt = ejecute.length();
-		--lengt;
-		return ejecute.substring(0, --lengt);
-	}
-
-	static String[] artefactos = new String[] { "amq-broker-jdbc", "apicast-redis", "archivos-api", "archivos-ui",
-			"auditorias-api", "autorizaciones-api", "autorizaciones-ui", "bff-autorizaciones", "camdoctor-api",
-			"casos-api", "diagnosticos-api", "especialidades-api", "gestion-api", "informes-api", "instituciones-api",
-			"legacy-asociado-api", "legacy-liquidaciones-api", "legacy-medicamentos-api", "legacy-prestadores-api",
-			"lifia-integracion-api", "practicas-api", "prestaciones-broker", "prestaciones-ui", "prestadores-api",
-			"profesionales-api", "proxy-prestaciones", "proxy-reverso-api", "reportes-api", "sesion-api",
-			"som-integracion-api" };
-
-	static Map<String, String> tags = new HashMap<String, String>();
-	static List<String> incorrectosRecursos = new ArrayList<String>();
-	static List<String> incorrectosReadinessProbe = new ArrayList<String>();
-	static List<String> incorrectosLivenessProbe = new ArrayList<String>();
 	static Map<String, String> artefactosTags = new HashMap<String, String>();
 
 	static {
-		artefactosTags.put("amq-broker-jdbc", "");
-		artefactosTags.put("apicast-redis", "");
-		artefactosTags.put("archivos-api", "");
-		artefactosTags.put("archivos-ui", "");
-		artefactosTags.put("auditorias-api", "");
-		artefactosTags.put("autorizaciones-api", "");
-		artefactosTags.put("autorizaciones-ui", "");
-		artefactosTags.put("bff-autorizaciones", "");
-		artefactosTags.put("camdoctor-api", "");
-		artefactosTags.put("casos-api", "");
-		artefactosTags.put("diagnosticos-api", "");
-		artefactosTags.put("especialidades-api", "");
-		artefactosTags.put("gestion-api", "");
-		artefactosTags.put("informes-api", "");
-		artefactosTags.put("instituciones-api", "");
-		artefactosTags.put("legacy-asociado-api", "");
-		artefactosTags.put("legacy-liquidaciones-api", "");
-		artefactosTags.put("legacy-medicamentos-api", "");
-		artefactosTags.put("legacy-prestadores-api", "");
-		artefactosTags.put("lifia-integracion-api", "");
-		artefactosTags.put("practicas-api", "");
-		artefactosTags.put("prestaciones-broker", "");
-		artefactosTags.put("prestaciones-ui", "");
-		artefactosTags.put("prestadores-api", "");
-		artefactosTags.put("profesionales-api", "");
-		artefactosTags.put("proxy-prestaciones", "");
-		artefactosTags.put("proxy-reverso-api", "");
-		artefactosTags.put("reportes-api", "");
-		artefactosTags.put("sesion-api", "");
-		artefactosTags.put("som-integracion-api", "");
+		artefactosTags.put("auditorias-api", "20220203193609-develop");
+		artefactosTags.put("prestaciones-ui", "20230830220034-develop");
+		artefactosTags.put("proxy-prestaciones", "20210715215412-develop");
+		artefactosTags.put("archivos-ui", "20221122195928-wpVisualizacion");
+		artefactosTags.put("casos-api", "20230825163128-develop");
+		artefactosTags.put("especialidades-api", "20221221161028-develop");
+		artefactosTags.put("diagnosticos-api", "20210126192826-develop");
+		artefactosTags.put("legacy-medicamentos-api", "20210126192205-develop");
+		artefactosTags.put("practicas-api", "20220201174718-develop");
+		artefactosTags.put("profesionales-api", "20221011170426-develop");
+		artefactosTags.put("gestion-api", "20211222222522-develop");
+		artefactosTags.put("informes-api", "20211028145611-develop");
+		artefactosTags.put("instituciones-api", "20220328201328-develop");
+		artefactosTags.put("legacy-liquidaciones-api", "20210416184749-develop");
+		artefactosTags.put("legacy-prestadores-api", "20210728152239-20210319183302-develop");
+		artefactosTags.put("prestaciones-ui", "20230830220034-develop");
+		artefactosTags.put("prestadores-api", "20210728152312-fixMerge");
+		artefactosTags.put("reportes-api", "20210602161337-develop");
+		artefactosTags.put("proxy-reverso-api", "1.0-SNAPSHOT");
+		artefactosTags.put("sesion-api", "20211018190446-develop");
+		artefactosTags.put("archivos-api", "1.3.0-BETA-2");
+		artefactosTags.put("camdoctor-api", "20220615230012-develop");
+		artefactosTags.put("auditorias-api", "20220203193609-develop");
+		artefactosTags.put("prestaciones-ui", "20230830220034-develop");
+		artefactosTags.put("proxy-prestaciones", "20210715215412-develop");
+		artefactosTags.put("archivos-ui", "20221122195928-wpVisualizacion");
+		artefactosTags.put("casos-api", "20230825163128-develop");
+		artefactosTags.put("especialidades-api", "20221221161028-develop");
+		artefactosTags.put("diagnosticos-api", "20210126192826-develop");
+		artefactosTags.put("legacy-medicamentos-api", "20210126192205-develop");
 
 	}
 }

@@ -18,7 +18,8 @@ import app.model.Status;
 
 public class Main {
 
-	public static String login = "oc login --token=sha256~wRro1CQl7dstP-NUsdSHZzOkfAPBiaK2x4wtWHNdZUY --server=https://api.osnoprod01.aseconecta.com.ar:6443";
+	public static String token =  "sha256~pRwfSiaqTcX_h9uNq1gFRtBIrGS_oMYComLQ5r8ADAQ";
+	public static String login = "oc login --token=" + token + " --server=https://api.osnoprod01.aseconecta.com.ar:6443";
 
 	public static void main(String[] args) {
 
@@ -31,27 +32,28 @@ public class Main {
 	}
 
 	public static Gson getGsonCondition() {
-		return new GsonBuilder()
-		.registerTypeAdapter(LocalDateTime.class, new JsonDeserializer<LocalDateTime>() {
+		return new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new JsonDeserializer<LocalDateTime>() {
 			@Override
-			public LocalDateTime deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+			public LocalDateTime deserialize(JsonElement json, Type type,
+					JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 				String asString = json.getAsJsonPrimitive().getAsString();
 				return LocalDateTime.ofInstant(Instant.parse(asString), ZoneId.systemDefault());
 			}
 		}).registerTypeAdapter(Status.class, new JsonDeserializer<Status>() {
 			@Override
-			public Status deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+			public Status deserialize(JsonElement json, Type type,
+					JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 				String asString = json.getAsJsonPrimitive().getAsString();
 				return Status.valueOf(asString);
 			}
 		}).registerTypeAdapter(app.model.Type.class, new JsonDeserializer<app.model.Type>() {
 			@Override
-			public app.model.Type deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			public app.model.Type deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+					throws JsonParseException {
 				String asString = json.getAsJsonPrimitive().getAsString();
-				return app.model.Type.valueOf(asString);				}
-		})
-		.create();
+				return app.model.Type.valueOf(asString);
+			}
+		}).create();
 	}
 
-	
 }

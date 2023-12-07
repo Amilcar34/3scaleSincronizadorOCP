@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 
 import app.Main;
 
-public class Resources {
+public class ResourcesNamespaces {
 
 	public static void main(String[] data) throws InterruptedException, IOException {
 
