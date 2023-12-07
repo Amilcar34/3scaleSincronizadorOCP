@@ -11,6 +11,7 @@ import java.util.Map;
 import com.google.gson.Gson;
 
 import app.Main;
+import app.Main;
 import app.Resources;
 import app.model.ReadinessProbe;
 import app.model.Resource;
@@ -23,7 +24,7 @@ public class ResourcesAsePrestadores {
 
 	public static void main(String[] data) throws InterruptedException, IOException {
 
-		Application.ejecute(Main.login);
+		Main.ejecute(Main.login);
 		new Resources(namespace, useArtefactosDinamicos, artefacttosTags, artefactos).star();
 	}
 

@@ -1,5 +1,8 @@
 package app;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -23,15 +26,33 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		String asString = "2023-11-03T18:00:53Z";
-		Instant jose = Instant.parse(asString);
-		LocalDateTime ofInstant = LocalDateTime.ofInstant(Instant.parse(asString), ZoneId.systemDefault());
-		System.out.println(ofInstant);
-		String pepe = asString;
-		System.out.println(LocalDateTime.parse(pepe));
+	}
+	
+	public static String ejecute(String command) {
+//		System.out.println(command);
+		StringBuffer response = null;
+		try {
+			Process proc = Runtime.getRuntime().exec(command);
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+
+			response = new StringBuffer(reader.read());
+			String line = "";
+			while ((line = reader.readLine()) != null) {
+				response.append(line + "\n");
+			}
+			proc.waitFor();
+
+		} catch (IOException | InterruptedException e) {
+			System.err.println("Error al ejecutar");
+			System.err.println(command);
+			e.printStackTrace();
+		}
+		return response.toString();
 	}
 
 	public static Gson getGsonCondition() {
+		
 		return new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new JsonDeserializer<LocalDateTime>() {
 			@Override
 			public LocalDateTime deserialize(JsonElement json, Type type,

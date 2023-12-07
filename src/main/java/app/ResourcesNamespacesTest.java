@@ -2,15 +2,16 @@ package app;
 
 import java.io.IOException;
 
-import app.resources.Application;
-
 public class ResourcesNamespacesTest {
 
 	public static void main(String[] data) throws InterruptedException, IOException {
 
-		Application.ejecute(Main.login);
+		Main.ejecute(Main.login);
 		for (String namespace : namespaces) {
+			System.out.println();
+			System.out.println("---------------------------------------------------TRABAJANDO EN: " + namespace);
 			new Resources(namespace, true, null, null).star();
+			System.out.println();
 		}
 	}
 

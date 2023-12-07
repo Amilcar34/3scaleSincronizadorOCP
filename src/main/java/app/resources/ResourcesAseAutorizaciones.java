@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import app.Main;
+import app.Main;
 import app.Resources;
 
 public class ResourcesAseAutorizaciones {
@@ -15,12 +16,13 @@ public class ResourcesAseAutorizaciones {
 
 	public static void main(String[] data) throws InterruptedException, IOException {
 
-		Application.ejecute(Main.login);
+		Main.ejecute(Main.login);
 		new Resources(namespace, useArtefactosDinamicos, artefacttosTags, artefactos).star();
 
 	}
 
-	static String[] artefactos = new String[] { "autorizaciones-ui", "autorizaciones-bff", "openshift-activemq",
+	static String[] artefactos = new String[] { "autorizaciones-ui", "autorizaciones-bff", 
+//			"openshift-activemq",
 			"alertas-api", "aprobaciones-api", "ase-numera-api", "auditor-api", "auth-api", "autorizacion-api",
 			"autorizaciones-brokermq-api", "beneficiario-api", "canal-api", "circuito-api", "documento-auditoria-api",
 			"documento-checklist-api", "docu-check-legacy-api", "efecto-api", "empresa-api", "enfermedades-api",
@@ -31,7 +33,7 @@ public class ResourcesAseAutorizaciones {
 	static {
 		artefacttosTags.put("autorizaciones-ui", "20231128185441-migracion-ocp4-bff-V1.6");
 		artefacttosTags.put("autorizaciones-bff", "20231109113554-main");
-		artefacttosTags.put("openshift-activemq", "7.11.0-8");
+//		artefacttosTags.put("openshift-activemq", "7.11.0-8");
 		artefacttosTags.put("alertas-api", "20231107150731-migracion-ocp4");
 		artefacttosTags.put("aprobaciones-api", "20231114163801-migracion-ocp4-V1.5.5");
 		artefacttosTags.put("ase-numera-api", "20231107132637-migracion-ocp4");

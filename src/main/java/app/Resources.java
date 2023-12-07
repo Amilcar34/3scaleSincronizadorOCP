@@ -1,5 +1,7 @@
 package app;
 
+import static app.Main.ejecute;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,13 +14,12 @@ import com.google.gson.Gson;
 
 import app.model.ReadinessProbe;
 import app.model.Resource;
-import static app.resources.Application.ejecute;
 
 public class Resources {
 
 	private String namespace = "aseautorizaciones-test";
 	private boolean useArtefactosDinamicos = false;
-	private Map<String, String> artefacttosTags;
+	private Map<String, String> artefactosTags;
 	private String[] artefactos;
 
 	public Resources(String namespace, boolean useArtefactosDinamicos, Map<String, String> artefacttosTags,
@@ -26,12 +27,13 @@ public class Resources {
 
 		this.namespace = namespace;
 		this.useArtefactosDinamicos = useArtefactosDinamicos;
-		this.artefacttosTags = artefacttosTags;
+		this.artefactosTags = artefacttosTags;
 		this.artefactos = artefactos;
 	}
-	
+
 	public void star() throws InterruptedException, IOException {
 
+		selectNamespaceTest();
 		interateProject();
 
 		System.out.println("----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ");
@@ -48,21 +50,24 @@ public class Resources {
 
 //		System.out.println("----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ");
 //		System.out.println("----- Artefactos - tags OCP4: ");
-//		tags.forEach((k, v) -> System.out.println(k + " - " + v));
+//		tagsCluster.forEach((k, v) -> System.out.println(k + " - " + v));
+//		
 //		System.out.println("----- Artefactos - tags Docuemnto: ");
 //		artefacttosTags.forEach((k, v) -> System.out.println(k + " - " + v));
+//
+		if (this.useArtefactosDinamicos == false) {
+			System.out.println("----- Artefactos - tags DIFERENCIAS: ");
+			artefactosTags.forEach((k, v) -> {
+				if (!tagsCluster.get(k).equals(v)) {
+					System.out.println(k);
+				}
+			});
+		}
 
-//		System.out.println("----- Artefactos - tags DIFERENCIAS: ");
-//		artefacttosTags.forEach((k, v) -> {
-//			if (!tags.get(k).equals(v)) {
-//				System.out.println(k);
-//			}
-//		});
 	}
 
 	private void interateProject() {
 
-		selectNamespaceTest();
 		iterateRecursos();
 		System.out.println("Finalizo el chequeo por recursos");
 		System.out.println();
@@ -72,6 +77,49 @@ public class Resources {
 		iterateLivenessProbe();
 		System.out.println("Finalizo el chequeo por LivenessProbe");
 		System.out.println();
+		verifyConfigMap();
+	}
+
+	/**
+	 * Este metodo verifica que todas las variables que tienen el mismo valor tengan
+	 * el mismo nombre
+	 * 
+	 */
+	private void verifyConfigMap() {
+
+		for (String aplication : getArtefactos()) {
+
+			Map<String, String> configmapTemp = new HashMap<String, String>(configsMaps);
+
+			String idConfigmapCommand = "oc get deployments " + aplication
+					+ " -o jsonpath=\"{['spec.template.spec.containers'][0].envFrom[0].configMapRef.name}\"";
+			String idConfigmap = clean(ejecute(idConfigmapCommand));
+
+			if (idConfigmap.length() > 3) { // se descarta si no tiene configmap
+				String configMapString = "oc get configmap " + idConfigmap + " -o jsonpath=\"{['data']}\"";
+				configMapString = clean(ejecute(configMapString));
+
+				Map<String, String> configmap = new Gson().fromJson(configMapString, Map.class);
+
+				for (Map.Entry<String, String> entry : configmap.entrySet()) {
+					String v = entry.getValue();
+					String k = entry.getKey();
+					if (v.contains("apps.osnoprod01.aseconecta.com.ar")) {
+						if (!k.equals(HOST_3SCALE))
+							System.err.println(k + "  :  " + v + "  :  " + aplication);
+//						System.out.println(" - - - - ");
+//					HOST_3SCALE;
+//					KEY_3SCALE;
+
+						if (configmapTemp.put(v, k) != null) {
+							if (!configmapTemp.get(v).equals(configsMaps.get(v)))
+//								System.err.println(k + "  :  " + aplication + "  :  " + v);
+						}
+					}
+				}
+			}
+			configsMaps = new HashMap<String, String>(configmapTemp);
+		}
 	}
 
 	private void iterateLivenessProbe() {
@@ -250,8 +298,13 @@ public class Resources {
 		return artefactos;
 	}
 
+	final static String HOST_3SCALE = "HOST_3SCALE";
+	final static String KEY_3SCALE = "KEY_3SCALE";
+
 	String[] artefactosDinamicos;
-	
+
+	Map<String, String> configsMaps = new HashMap<String, String>();
+
 	Map<String, String> tagsCluster = new HashMap<String, String>();
 	List<String> incorrectosRecursos = new ArrayList<String>();
 	List<String> incorrectosReadinessProbe = new ArrayList<String>();
