@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import app.Main;
 import app.Resources;
 
 public class ResourcesAseAutorizaciones {
@@ -13,7 +14,8 @@ public class ResourcesAseAutorizaciones {
 	static Map<String, String> artefacttosTags = new HashMap<String, String>();
 
 	public static void main(String[] data) throws InterruptedException, IOException {
-		
+
+		Application.ejecute(Main.login);
 		new Resources(namespace, useArtefactosDinamicos, artefacttosTags, artefactos).star();
 
 	}

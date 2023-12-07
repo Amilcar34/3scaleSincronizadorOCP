@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 
 import app.model.ReadinessProbe;
 import app.model.Resource;
+import static app.resources.Application.ejecute;
 
 public class Resources {
 
@@ -224,35 +225,7 @@ public class Resources {
 		return intResource;
 	}
 
-	private void login() {
-		ejecute(Main.login);
-	}
-
-	private String ejecute(String command) {
-//		System.out.println(command);
-		StringBuffer response = null;
-		try {
-			Process proc = Runtime.getRuntime().exec(command);
-
-			BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-
-			response = new StringBuffer(reader.read());
-			String line = "";
-			while ((line = reader.readLine()) != null) {
-				response.append(line + "\n");
-			}
-			proc.waitFor();
-
-		} catch (IOException | InterruptedException e) {
-			System.err.println("Error al ejecutar");
-			System.err.println(command);
-			e.printStackTrace();
-		}
-		return response.toString();
-	}
-
 	private void selectNamespaceTest() {
-		login();
 		String command = "oc project " + namespace;
 		System.out.println(ejecute(command));
 	}
@@ -271,6 +244,7 @@ public class Resources {
 				String respuesta = ejecute(command);
 				String replaceAll = respuesta.replaceAll("\"", "");
 				artefactosDinamicos = replaceAll.split(" ");
+				return artefactosDinamicos;
 			} else
 				return artefactosDinamicos;
 		return artefactos;

@@ -23,6 +23,7 @@ public class ResourcesAsePrestadores {
 
 	public static void main(String[] data) throws InterruptedException, IOException {
 
+		Application.ejecute(Main.login);
 		new Resources(namespace, useArtefactosDinamicos, artefacttosTags, artefactos).star();
 	}
 
