@@ -35,12 +35,12 @@ public class ResourcesAseAutorizaciones {
 		artefacttosTags.put("autorizaciones-bff", "20231207221518-main");
 //		artefacttosTags.put("openshift-activemq", "7.11.0-8");
 		artefacttosTags.put("alertas-api", "20231107150731-migracion-ocp4");
-		artefacttosTags.put("aprobaciones-api", "20231207195404-migracion-ocp4");
+		artefacttosTags.put("aprobaciones-api", "20231211163637-migracion-ocp4-V1.5.5");
 		artefacttosTags.put("ase-numera-api", "20231107132637-migracion-ocp4");
 		artefacttosTags.put("auditor-api", "20231107193410-migracion-ocp4-1.0.0");
 		artefacttosTags.put("auth-api", "20231107192042-migracion-ocp4-V1.5");
-		artefacttosTags.put("autorizacion-api", "20231211122450-migracion-ocp4-V1.5");
-		artefacttosTags.put("autorizaciones-brokermq-api", "20231211143608-migracion-ocp4-noupgrade");
+		artefacttosTags.put("autorizacion-api", "20231211170534-migracion-ocp4-V1.5");
+		artefacttosTags.put("autorizaciones-brokermq-api", "20231211175132-migracion-ocp4-noupgrade");
 		artefacttosTags.put("beneficiario-api", "20231114185437-migracion-ocp4-V1.5.5");
 		artefacttosTags.put("canal-api", "20231114125129-migracion-ocp4");
 		artefacttosTags.put("circuito-api", "20231108151227-migracion-ocp4");
@@ -59,7 +59,7 @@ public class ResourcesAseAutorizaciones {
 		artefacttosTags.put("medicamento-api", "20231108123312-migracion-ocp4");
 		artefacttosTags.put("medicos-api", "20231107175801-migracion-ocp4");
 		artefacttosTags.put("nomenclador-api", "20231012172853-migracion-ocp4-V1.2.24");
-		artefacttosTags.put("notificaciones-api", "20231211150413-migracion-ocp4-V1.5.1");
+		artefacttosTags.put("notificaciones-api", "20231211165946-migracion-ocp4-V1.5.1");
 		artefacttosTags.put("parametria-api", "20230929172134-migracion-ocp4");
 		artefacttosTags.put("pmo1-api", "20231113192717-migracion-ocp4");
 		artefacttosTags.put("reintegros-api", "20230920151142-migracion-ocp4-V1.7.0");

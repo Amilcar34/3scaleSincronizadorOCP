@@ -20,7 +20,7 @@ import app.model.Resource;
 public class Resources {
 
 	private static final String KEY_3SCALE_VALUE = "04d6b08b4fd321cd6c9cfea35dac7774";
-	private static final String leftAlignFormat = "| %-27s | %-43s | %-60s | %n";
+	private static final String leftAlignFormat = "| %-20s | %-35s | %-60s | %n";
 	private String namespace = "aseautorizaciones-test";
 	private boolean useArtefactosDinamicos = false;
 	private Map<String, String> artefactosTags;
@@ -144,6 +144,7 @@ public class Resources {
 						printErrApplicationKeyValue(aplication, k, v);
 						printErrApplicationKeyValue(configsMaps3DValueApplication.get(v, configsMaps.get(v)), configsMaps.get(v), v);
 						System.out.println("---------------------------------------------------------------------");
+						System.out.println();
 					}
 				}
 			}
