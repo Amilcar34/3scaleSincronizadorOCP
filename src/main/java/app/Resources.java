@@ -2,14 +2,16 @@ package app;
 
 import static app.Main.ejecute;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Supplier;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Table;
+import com.google.common.collect.Tables;
 import com.google.gson.Gson;
 
 import app.model.ReadinessProbe;
@@ -17,6 +19,8 @@ import app.model.Resource;
 
 public class Resources {
 
+	private static final String KEY_3SCALE_VALUE = "04d6b08b4fd321cd6c9cfea35dac7774";
+	private static final String leftAlignFormat = "| %-27s | %-43s | %-60s | %n";
 	private String namespace = "aseautorizaciones-test";
 	private boolean useArtefactosDinamicos = false;
 	private Map<String, String> artefactosTags;
@@ -87,9 +91,14 @@ public class Resources {
 	 */
 	private void verifyConfigMap() {
 
+		Map<String, String> applicationKey_conFaltaProtocolo = new HashMap<String, String>();
+
 		for (String aplication : getArtefactos()) {
 
-			Map<String, String> configmapTemp = new HashMap<String, String>(configsMaps);
+			Map<String, String> configmapTemp = new HashMap<String, String>();
+			Map<String, String> configmapHistoricoTemp = new HashMap<String, String>(configsMaps);
+
+			Table<String, String, String> configMap3DValueApplicationTemp = newTable();
 
 			String idConfigmapCommand = "oc get deployments " + aplication
 					+ " -o jsonpath=\"{['spec.template.spec.containers'][0].envFrom[0].configMapRef.name}\"";
@@ -104,22 +113,58 @@ public class Resources {
 				for (Map.Entry<String, String> entry : configmap.entrySet()) {
 					String v = entry.getValue();
 					String k = entry.getKey();
-					if (v.contains("apps.osnoprod01.aseconecta.com.ar")) {
-						if (!k.equals(HOST_3SCALE))
-							System.err.println(k + "  :  " + v + "  :  " + aplication);
-//						System.out.println(" - - - - ");
-//					HOST_3SCALE;
-//					KEY_3SCALE;
 
-						if (configmapTemp.put(v, k) != null) {
-							if (!configmapTemp.get(v).equals(configsMaps.get(v)))
-//								System.err.println(k + "  :  " + aplication + "  :  " + v);
+//					printApplicationKeyValue(aplication, k, v);
+
+					if (v.contains(KEY_3SCALE_VALUE)) {
+						if (!k.equals(KEY_3SCALE)) {
+							System.err.println("Debe llamarse: " + KEY_3SCALE + " pero se llama: " + k);
+							printErrApplicationKeyValue(aplication, k, v);
 						}
+					}
+					if (v.toUpperCase().contains("3scale")) {
+						if (!k.equals(HOST_3SCALE)) {
+							System.err.println("Debe llamarse: " + HOST_3SCALE + " pero se llama: " + k);
+							printErrApplicationKeyValue(aplication, k, v);
+						}
+					}
+					if (v.contains("apps.osnoprod01.aseconecta.com.ar") || v.contains(".svc.cluster.local"))
+						if (!v.contains("http"))
+							applicationKey_conFaltaProtocolo.put(aplication, k);
+
+					// Sieve para filtrar cuando hay un mismo deployment
+					// con iguales valores a diferentes key (pasa con datos de DBs)
+					String valueTemp = configmapTemp.put(v, k);
+					
+					String valueHistoricoTemp = configmapHistoricoTemp.put(v, k);
+					configMap3DValueApplicationTemp.put(v, k, aplication);
+
+					if (valueTemp == null && valueHistoricoTemp != null && !valueHistoricoTemp.equals(k)) {
+						System.out.println("---------------------------------------------------------------------");
+						printErrApplicationKeyValue(aplication, k, v);
+						printErrApplicationKeyValue(configsMaps3DValueApplication.get(v, configsMaps.get(v)), configsMaps.get(v), v);
+						System.out.println("---------------------------------------------------------------------");
 					}
 				}
 			}
-			configsMaps = new HashMap<String, String>(configmapTemp);
+			configsMaps = new HashMap<String, String>(configmapHistoricoTemp);
+			configsMaps3DValueApplication.putAll(configMap3DValueApplicationTemp);
 		}
+
+		if (!applicationKey_conFaltaProtocolo.isEmpty()) {
+			System.out.println();
+			System.err.println("Debe contener el protocolo http o https");
+			applicationKey_conFaltaProtocolo.forEach((k, v) -> System.err.format(leftAlignFormat, k, v, ""));
+		}
+
+	}
+
+	private static void printApplicationKeyValue(String a, String k, String v) {
+		System.out.format(leftAlignFormat, a, k, v);
+	}
+
+	private static void printErrApplicationKeyValue(String a, String k, String v) {
+		System.err.format(leftAlignFormat, a, k, v);
 	}
 
 	private void iterateLivenessProbe() {
@@ -303,11 +348,21 @@ public class Resources {
 
 	String[] artefactosDinamicos;
 
-	Map<String, String> configsMaps = new HashMap<String, String>();
-
 	Map<String, String> tagsCluster = new HashMap<String, String>();
 	List<String> incorrectosRecursos = new ArrayList<String>();
 	List<String> incorrectosReadinessProbe = new ArrayList<String>();
 	List<String> incorrectosLivenessProbe = new ArrayList<String>();
 
+	Map<String, String> configsMaps = new HashMap<String, String>();
+
+	Table<String, String, String> configsMaps3DValueApplication = newTable();
+
+	private Table<String, String, String> newTable() {
+		return Tables.newCustomTable(Maps.<String, Map<String, String>>newHashMap(),
+				new Supplier<Map<String, String>>() {
+					public Map<String, String> get() {
+						return Maps.newHashMap();
+					}
+				});
+	}
 }

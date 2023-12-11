@@ -21,7 +21,7 @@ import app.model.Status;
 
 public class Main {
 
-	public static String token =  "sha256~pRwfSiaqTcX_h9uNq1gFRtBIrGS_oMYComLQ5r8ADAQ";
+	public static String token =  "sha256~5CzurnAk7dWVfZBnpRCNLw1ZNHCqtuZWdLHo7SJ_uP0";
 	public static String login = "oc login --token=" + token + " --server=https://api.osnoprod01.aseconecta.com.ar:6443";
 
 	public static void main(String[] args) {
