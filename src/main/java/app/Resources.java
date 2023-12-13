@@ -11,6 +11,7 @@ import java.util.Map;
 import com.google.common.base.Supplier;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
+import com.google.common.collect.Table.Cell;
 import com.google.common.collect.Tables;
 import com.google.gson.Gson;
 
@@ -19,7 +20,7 @@ import app.model.Resource;
 
 public class Resources {
 
-	private static final String leftAlignFormat = "| %-27s | %-40s | %-60s | %n";
+	private static final String leftAlignFormat = "| %-27s | %-30s | %-60s | %n";
 
 	private String KEY_3SCALE_VALUE;
 	private final String namespace;
@@ -42,20 +43,18 @@ public class Resources {
 		selectNamespaceTest();
 		interateProject();
 
-		System.out.println("----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ");
 		System.out.println("----- Incorrectos Por Recursos: " + incorrectosRecursos.size());
-		incorrectosRecursos.forEach(System.out::println);
+		if (!incorrectosRecursos.isEmpty()) 
+			incorrectosRecursos.forEach(System.out::println);
 
-		System.out.println("----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ");
-		System.out.println("----- Incorrectos Por ReadinessProbe: " + incorrectosReadinessProbe.size());
-		incorrectosReadinessProbe.forEach(System.out::println);
-		System.out.println();
+		System.out.println("\n----- Incorrectos Por ReadinessProbe: " + incorrectosReadinessProbe.size());
+		if (!incorrectosReadinessProbe.isEmpty()) 
+			incorrectosReadinessProbe.forEach(System.out::println);
 
-		System.out.println("----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ");
-		System.out.println("----- Incorrectos Por LivenessProbe: " + incorrectosLivenessProbe.size());
-		incorrectosLivenessProbe.forEach(System.out::println);
-		System.out.println();
-
+		System.out.println("\n----- Incorrectos Por LivenessProbe: " + incorrectosLivenessProbe.size());
+		if (!incorrectosLivenessProbe.isEmpty()) 
+			incorrectosLivenessProbe.forEach(System.out::println);
+		
 //		System.out.println("----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ");
 //		System.out.println("----- Artefactos - tags OCP4: ");
 //		tagsCluster.forEach((k, v) -> System.out.println(k + " - " + v));
@@ -64,13 +63,23 @@ public class Resources {
 //		artefacttosTags.forEach((k, v) -> System.out.println(k + " - " + v));
 //
 		if (this.useArtefactosDinamicos == false) {
-			System.out.println("--- Start: Artefactos - tags DIFERENCIAS: ");
+			System.out.println("\n--- Start: Artefactos - tags DIFERENCIAS: \n");
 			artefactosTags.forEach((k, v) -> {
 				if (!tagsCluster.get(k).equals(v)) {
-					System.out.println(k);
+					System.err.println(k);
 				}
 			});
-			System.out.println("----- FIN: Artefactos - tags DIFERENCIAS: ");
+			System.out.println("----- FIN: Artefactos - tags DIFERENCIAS \n");
+		}
+
+		System.out.println("\n----- Artefactos que usan rutas publicas: " + rutasPublicas.size());
+		if (!rutasPublicas.isEmpty()) {
+			System.out.println("- - - Start: Artefactos que usan rutas publicas - - - \n");
+			printErrApplicationKeyValue(" Deployment / Artefacto ", " Variable de entorno ", " Valor ");
+			for (Cell<String, String, String> cell : rutasPublicas.cellSet())
+				printApplicationKeyValue(cell.getRowKey(), cell.getColumnKey(), cell.getValue());
+
+			System.out.println("\n- - - FIN: Artefactos que usan rutas publicas - - -");
 		}
 
 	}
@@ -78,16 +87,9 @@ public class Resources {
 	private void interateProject() {
 
 		iterateRecursos();
-		System.out.println("Finalizo el chequeo por recursos");
-		System.out.println();
 		iterateReadinessProbe();
-		System.out.println("Finalizo el chequeo por ReadinessProbe");
-		System.out.println();
 		iterateLivenessProbe();
-		System.out.println("Finalizo el chequeo por LivenessProbe");
-		System.out.println();
 		verifyConfigMap();
-		System.out.println();
 	}
 
 	/**
@@ -122,6 +124,7 @@ public class Resources {
 					String v = entry.getValue();
 					String k = entry.getKey();
 					sleep();
+
 //					printApplicationKeyValue(aplication, k, v);
 
 					if (v.contains(getKey3scaleValue())) {
@@ -139,6 +142,8 @@ public class Resources {
 					if (v.contains("apps.osnoprod01.aseconecta.com.ar") || v.contains(".svc.cluster.local"))
 						if (!v.contains("http"))
 							applicationKey_conFaltaProtocolo.put(aplication, k);
+						else if (v.contains("apps.osnoprod01.aseconecta.com.ar"))
+							rutasPublicas.put(aplication, k, v);
 
 					// Sieve para filtrar cuando hay un mismo deployment
 					// con iguales valores a diferentes key (pasa con datos de DBs)
@@ -147,14 +152,11 @@ public class Resources {
 					String valueHistoricoTemp = configmapHistoricoTemp.put(v, k);
 					configMap3DValueApplicationTemp.put(v, k, aplication);
 
-					if (valueTemp == null && valueHistoricoTemp != null && !valueHistoricoTemp.equals(k)
-&& ("autorizaciones-bff".equals(aplication) || "autorizaciones-bff".equals(configsMaps3DValueDeployment.get(v, configsMaps.get(v))))
-							) {
-						System.out.println("---------------------------------------------------------------------");
+					if (valueTemp == null && valueHistoricoTemp != null && !valueHistoricoTemp.equals(k)) {
+						System.out.println(" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
 						printErrApplicationKeyValue(aplication, k, v);
-						printErrApplicationKeyValue(configsMaps3DValueDeployment.get(v, configsMaps.get(v)),
-								configsMaps.get(v), v);
-						System.out.println();
+						String a = configsMaps3DValueDeployment.get(v, configsMaps.get(v));
+						printErrApplicationKeyValue(a, configsMaps.get(v), v);
 					}
 				}
 			}
@@ -163,8 +165,7 @@ public class Resources {
 		}
 
 		if (!applicationKey_conFaltaProtocolo.isEmpty()) {
-			System.out.println();
-			System.err.println("Debe contener el protocolo http o https");
+			System.err.println("\n Debe contener el protocolo http o https");
 			applicationKey_conFaltaProtocolo.forEach((k, v) -> System.err.format(leftAlignFormat, k, v, ""));
 		}
 
@@ -172,7 +173,7 @@ public class Resources {
 
 	private void sleep() {
 		try {
-			Thread.sleep(5);
+			Thread.sleep(8);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -199,14 +200,14 @@ public class Resources {
 			if (requests.isBlank()) {
 				System.err.print(namespace + " ");
 				System.out.println(aplication);
-				System.err.println("NO POSEE LivenessProbe");
+				System.err.println("ERROR: NO POSEE LivenessProbe");
 				incorrectosLivenessProbe.add(aplication);
 			} else {
 				ReadinessProbe resource = new Gson().fromJson(requests, ReadinessProbe.class);
 				if (resource.httpGet == null || resource.httpGet.path == null) {
 					System.err.print(namespace + " ");
 					System.out.println(aplication);
-					System.err.println("NO POSEE DATOS LivenessProbe");
+					System.err.println("ERROR: NO POSEE DATOS LivenessProbe");
 					incorrectosLivenessProbe.add(aplication);
 				} else if (resource.initialDelaySeconds != 120) {
 					System.err.print(namespace + " ");
@@ -231,6 +232,7 @@ public class Resources {
 				}
 			}
 		}
+		System.out.println("\n Finalizo el chequeo por LivenessProbe \n");
 	}
 
 	private void iterateReadinessProbe() {
@@ -245,14 +247,14 @@ public class Resources {
 			if (requests.isBlank()) {
 				System.err.print(namespace + " ");
 				System.out.println(aplication);
-				System.err.println("NO POSEE readinessProbe");
+				System.err.println("ERROR: NO POSEE readinessProbe");
 				incorrectosReadinessProbe.add(aplication);
 			} else {
 				ReadinessProbe resource = new Gson().fromJson(requests, ReadinessProbe.class);
 				if (resource.httpGet == null || resource.httpGet.path == null) {
 					System.err.print(namespace + " ");
 					System.out.println(aplication);
-					System.err.println("NO POSEE DATOS readinessProbe");
+					System.err.println("ERROR: NO POSEE DATOS readinessProbe");
 					incorrectosReadinessProbe.add(aplication);
 				} else if (resource.initialDelaySeconds != 120) {
 					System.err.print(namespace + " ");
@@ -276,7 +278,9 @@ public class Resources {
 					incorrectosReadinessProbe.add(aplication);
 				}
 			}
+			sleep();
 		}
+		System.out.println("\n Finalizo el chequeo por ReadinessProbe \n");
 	}
 
 	private void iterateRecursos() {
@@ -294,7 +298,7 @@ public class Resources {
 			if (requests.isBlank() || limits.isBlank()) {
 				System.err.print(namespace + " ");
 				System.out.println(aplication);
-				System.err.println("NO POSEE limite de recursos asignados");
+				System.err.println("ERROR: NO POSEE limite de recursos asignados");
 				incorrectosRecursos.add(aplication);
 			} else {
 				Resource resource = new Gson().fromJson(requests, Resource.class);
@@ -312,6 +316,7 @@ public class Resources {
 
 			}
 		}
+		System.out.println("Finalizo el chequeo por recursos \n");
 	}
 
 	private void setTags(String aplication) {
@@ -408,6 +413,7 @@ public class Resources {
 	Map<String, String> configsMaps = new HashMap<String, String>();
 
 	Table<String, String, String> configsMaps3DValueDeployment = newTable();
+	Table<String, String, String> rutasPublicas = newTable();
 
 	private Table<String, String, String> newTable() {
 		return Tables.newCustomTable(Maps.<String, Map<String, String>>newHashMap(),

@@ -1,4 +1,7 @@
-package app.scale;
+package app;
+
+import static app.Main.ejecute;
+import static app.Main.ejecuteErr;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,7 +18,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.gson.Gson;
 
-import app.Main;
 import app.helper.Progress;
 import app.model.Backend;
 import app.model.Condition;
@@ -26,13 +28,21 @@ import app.model.Type;
 
 public class Sincro3ScaleWhitAzure {
 
-	private static final String NAMESPACE = "aseautorizaciones-test";
-	private static final String SCALE = "git@ssh.dev.azure.com:v3/ASEConecta/ASEAutorizaciones/3scale";
-	private static final String PWD_3SCALE = "/home/alberino_a/java/3scale";
+	private final String NAMESPACE;
+	private final String ssh_repo;
+	private final String PWD_3SCALE;
+	static final String ignore = "protesis-bff";
 
-	public static void main(String[] data) throws InterruptedException, IOException {
+	public Sincro3ScaleWhitAzure(String nAMESPACE, String sCALE, String pWD_3SCALE) {
+		this.NAMESPACE = nAMESPACE;
+		this.ssh_repo = sCALE;
+		this.PWD_3SCALE = pWD_3SCALE;
+		this.PATH_3SCALE = PWD_3SCALE + "/test/" + NAMESPACE + "/backends";
+		this.replace = "-" + NAMESPACE;
+	}
 
-		login();
+	public void star() throws InterruptedException, IOException {
+
 		ejecute("oc project 3scale");
 
 		System.out.println("----- Inicializa BackendsFrom3Scale -----");
@@ -66,9 +76,7 @@ public class Sincro3ScaleWhitAzure {
 
 		System.out.println("----- Check backend status TEST-----");
 		System.out.println();
-		Progress.runner();
 		CheckBackendStatusTest();
-		Progress.stall();
 
 		System.out.println("----- Check backend status UAT-----");
 		System.out.println();
@@ -78,11 +86,13 @@ public class Sincro3ScaleWhitAzure {
 		// oc get backend alertas-api-aseautorizaciones-uat -o jsonpath='{.status}'
 
 		// type -> status
-		System.out.println("----- FIN -----");
+		System.out.println("- - - - - FIN - - - - -");
 
 	}
 
 	private static void CheckBackendStatusUAT() {
+
+		Progress.runner();
 		Gson gson = Main.getGsonCondition();
 		Set<String> backends = backendFrom3Scale.keySet();
 
@@ -92,7 +102,6 @@ public class Sincro3ScaleWhitAzure {
 			try {
 				String ejecute = ejecute(command);
 				Condition[] conditions = gson.fromJson(clean(ejecute), Condition[].class);
-				System.out.println(command);
 				for (Condition condition : conditions) {
 					if (condition.type.equals(Type.Synced))
 						if (condition.status.equals(Status.True))
@@ -104,10 +113,11 @@ public class Sincro3ScaleWhitAzure {
 				System.err.println(command);
 			}
 		}
+		Progress.stall();
 	}
 
 	private static void CheckBackendStatusTest() {
-
+		Progress.runner();
 		Gson gson = Main.getGsonCondition();
 		Set<String> backends = backendFrom3Scale.keySet();
 
@@ -121,10 +131,10 @@ public class Sincro3ScaleWhitAzure {
 			}
 			System.err.println("ERROR: condition " + backend);
 		}
-
+		Progress.stall();
 	}
 
-	private static void CheckPrivateBaseURL() {
+	private void CheckPrivateBaseURL() {
 
 		System.out.println("Check de uso de rutas publicas en 3scale");
 		backendFrom3Scale.forEach((k, v) -> {
@@ -145,7 +155,7 @@ public class Sincro3ScaleWhitAzure {
 		});
 	}
 
-	private static void CompareContentMappingRulesFrom3Scale() {
+	private void CompareContentMappingRulesFrom3Scale() {
 
 		backendFrom3Scale.forEach((k, v) -> {
 			MappingRule[] MappingRulesFromAzure = backendsFromAzure.get(k).getSpec().getMappingRules();
@@ -163,7 +173,7 @@ public class Sincro3ScaleWhitAzure {
 		});
 	}
 
-	private static void CompareContentMappingRulesFromAzure() {
+	private void CompareContentMappingRulesFromAzure() {
 
 		backendsFromAzure.forEach((k, v) -> {
 			MappingRule[] MappingRulesFrom3Scale = backendFrom3Scale.get(k).getMappingRules();
@@ -181,7 +191,7 @@ public class Sincro3ScaleWhitAzure {
 		});
 	}
 
-	private static void CompareCountMappingRules() {
+	private void CompareCountMappingRules() {
 
 		backendsFromAzure.forEach((k, v) -> {
 			MappingRule[] MappingRulesFrom3Scale = backendFrom3Scale.get(k).getMappingRules();
@@ -195,7 +205,7 @@ public class Sincro3ScaleWhitAzure {
 		});
 	}
 
-	private static void BackendsCompareName() {
+	private void BackendsCompareName() {
 
 		System.out.println("----- Verifica cuales BACKENDS existen en AZURE-----");
 		backendsFromAzure.forEach((k, v) -> {
@@ -211,16 +221,26 @@ public class Sincro3ScaleWhitAzure {
 		System.out.println();
 	}
 
-	private static void BackendsFromAzure() throws IOException {
+	private void BackendsFromAzure() throws IOException {
 
-		File[] files = new File(PATH_3SCALE).listFiles();
+		File[] files = null;
+		if (PATH_3SCALE == null) {
+			files = new File(PATH_3SCALE).listFiles();
+		} else {
+			String command = "git clone " + this.ssh_repo;
+			System.out.println(command);
+			ejecuteErr(command);
+			File file = new File("./../../../../");
+			System.out.println(file.getAbsolutePath());
+			files = file.listFiles();
+		}
 		for (File file : files) {
 			Backend readValue = mapperYAML.readValue(file, Backend.class);
 			backendsFromAzure.put(readValue.getSpec().getSystemName(), readValue);
 		}
 	}
 
-	private static void BackendsFrom3Scale() throws JsonMappingException, JsonProcessingException {
+	private void BackendsFrom3Scale() throws JsonMappingException, JsonProcessingException {
 
 		String backends = "oc get products " + NAMESPACE + " -o jsonpath='{.spec.backendUsages}'";
 		backends = ejecute(backends);
@@ -229,11 +249,10 @@ public class Sincro3ScaleWhitAzure {
 		Set<String> backendUsageskeySet = backendUsages.keySet();
 
 		for (String k : backendUsageskeySet) {
-			if (!k.equalsIgnoreCase(ignore)) {
-				String ejecute = ejecute("oc get backend " + k + " -o jsonpath='{.spec}'");
-				Spec spec = new Gson().fromJson(clean(ejecute), Spec.class);
-				backendFrom3Scale.put(k, spec);
-			}
+
+			String ejecute = ejecute("oc get backend " + k + " -o jsonpath='{.spec}'");
+			Spec spec = new Gson().fromJson(clean(ejecute), Spec.class);
+			backendFrom3Scale.put(k, spec);
 		}
 
 	}
@@ -248,42 +267,9 @@ public class Sincro3ScaleWhitAzure {
 		return ejecute.substring(0, --lengt);
 	}
 
-	private static String ejecute(String command) {
-
-		StringBuffer response = null;
-		try {
-			Process proc = Runtime.getRuntime().exec(command);
-
-			InputStream inputStream = proc.getInputStream();
-			InputStreamReader in = new InputStreamReader(inputStream);
-			BufferedReader reader = new BufferedReader(in);
-
-			int read = reader.read();
-			response = new StringBuffer(read);
-			String line = "";
-			while ((line = reader.readLine()) != null) {
-				response.append(line + "\n");
-			}
-			proc.waitFor();
-
-		} catch (IOException | InterruptedException e) {
-			System.err.println("Error al ejecutar");
-			System.err.println(command);
-			e.printStackTrace();
-		}
-		return response.toString();
-	}
-
-	private static String login() {
-		return ejecute(Main.login);
-//		String token = "sha256~Cl8GUPDd2t14e7F4cusuxljFt9by_AjCBxDbMsP5wDc";
-//		return ejecute("oc login --token=" + token + " --server=https://api.osnoprod01.aseconecta.com.ar:6443");
-	}
-
-	static final String ignore = "protesis-bff";
 	static Map<String, Spec> backendFrom3Scale = new HashMap<>();
-	private static Map<String, Backend> backendsFromAzure = new HashMap<String, Backend>();
-	private static final ObjectMapper mapperYAML = new ObjectMapper(new YAMLFactory());
-	private static final String PATH_3SCALE = PWD_3SCALE + "/test/" + NAMESPACE + "/backends";
-	private static final CharSequence replace = "-" + NAMESPACE;
+	private Map<String, Backend> backendsFromAzure = new HashMap<String, Backend>();
+	private final ObjectMapper mapperYAML = new ObjectMapper(new YAMLFactory());
+	private final String PATH_3SCALE;
+	private final CharSequence replace;
 }
