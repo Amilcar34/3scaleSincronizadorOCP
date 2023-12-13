@@ -25,7 +25,7 @@ public class ResourcesAsePrestadores {
 	public static void main(String[] data) throws InterruptedException, IOException {
 
 		Main.ejecute(Main.login);
-		new Resources(namespace, useArtefactosDinamicos, artefacttosTags, artefactos).star();
+		new Resources(namespace, useArtefactosDinamicos, artefacttosTags, artefactos, "").star();
 	}
 
 	static String[] artefactos = new String[] { "archivos-ui", "prestadores-api", "sesion-api",

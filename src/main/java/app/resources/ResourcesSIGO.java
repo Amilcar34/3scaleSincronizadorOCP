@@ -13,7 +13,7 @@ public class ResourcesSIGO {
 	public static void main(String[] data) throws InterruptedException, IOException {
 
 		Main.ejecute(Main.login);
-		new Resources(namespace, false, null, null).star();
+		new Resources(namespace, false, null, null, "").star();
 	}
 
 }

@@ -19,20 +19,22 @@ import app.model.Resource;
 
 public class Resources {
 
-	private static final String KEY_3SCALE_VALUE = "04d6b08b4fd321cd6c9cfea35dac7774";
-	private static final String leftAlignFormat = "| %-20s | %-35s | %-60s | %n";
-	private String namespace = "aseautorizaciones-test";
+	private static final String leftAlignFormat = "| %-27s | %-40s | %-60s | %n";
+
+	private String KEY_3SCALE_VALUE;
+	private final String namespace;
 	private boolean useArtefactosDinamicos = false;
-	private Map<String, String> artefactosTags;
-	private String[] artefactos;
+	private final Map<String, String> artefactosTags;
+	private final String[] artefactos;
 
 	public Resources(String namespace, boolean useArtefactosDinamicos, Map<String, String> artefacttosTags,
-			String[] artefactos) {
+			String[] artefactos, String key3scaleValue) {
 
 		this.namespace = namespace;
 		this.useArtefactosDinamicos = useArtefactosDinamicos;
 		this.artefactosTags = artefacttosTags;
 		this.artefactos = artefactos;
+		this.KEY_3SCALE_VALUE = key3scaleValue;
 	}
 
 	public void star() throws InterruptedException, IOException {
@@ -47,10 +49,12 @@ public class Resources {
 		System.out.println("----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ");
 		System.out.println("----- Incorrectos Por ReadinessProbe: " + incorrectosReadinessProbe.size());
 		incorrectosReadinessProbe.forEach(System.out::println);
+		System.out.println();
 
 		System.out.println("----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ");
 		System.out.println("----- Incorrectos Por LivenessProbe: " + incorrectosLivenessProbe.size());
 		incorrectosLivenessProbe.forEach(System.out::println);
+		System.out.println();
 
 //		System.out.println("----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ");
 //		System.out.println("----- Artefactos - tags OCP4: ");
@@ -60,12 +64,13 @@ public class Resources {
 //		artefacttosTags.forEach((k, v) -> System.out.println(k + " - " + v));
 //
 		if (this.useArtefactosDinamicos == false) {
-			System.out.println("----- Artefactos - tags DIFERENCIAS: ");
+			System.out.println("--- Start: Artefactos - tags DIFERENCIAS: ");
 			artefactosTags.forEach((k, v) -> {
 				if (!tagsCluster.get(k).equals(v)) {
 					System.out.println(k);
 				}
 			});
+			System.out.println("----- FIN: Artefactos - tags DIFERENCIAS: ");
 		}
 
 	}
@@ -82,11 +87,14 @@ public class Resources {
 		System.out.println("Finalizo el chequeo por LivenessProbe");
 		System.out.println();
 		verifyConfigMap();
+		System.out.println();
 	}
 
 	/**
 	 * Este metodo verifica que todas las variables que tienen el mismo valor tengan
 	 * el mismo nombre
+	 * 
+	 * @throws InterruptedException
 	 * 
 	 */
 	private void verifyConfigMap() {
@@ -113,16 +121,16 @@ public class Resources {
 				for (Map.Entry<String, String> entry : configmap.entrySet()) {
 					String v = entry.getValue();
 					String k = entry.getKey();
-
+					sleep();
 //					printApplicationKeyValue(aplication, k, v);
 
-					if (v.contains(KEY_3SCALE_VALUE)) {
+					if (v.contains(getKey3scaleValue())) {
 						if (!k.equals(KEY_3SCALE)) {
 							System.err.println("Debe llamarse: " + KEY_3SCALE + " pero se llama: " + k);
 							printErrApplicationKeyValue(aplication, k, v);
 						}
 					}
-					if (v.toUpperCase().contains("3scale")) {
+					if (v.toLowerCase().contains("3scale")) {
 						if (!k.equals(HOST_3SCALE)) {
 							System.err.println("Debe llamarse: " + HOST_3SCALE + " pero se llama: " + k);
 							printErrApplicationKeyValue(aplication, k, v);
@@ -135,21 +143,23 @@ public class Resources {
 					// Sieve para filtrar cuando hay un mismo deployment
 					// con iguales valores a diferentes key (pasa con datos de DBs)
 					String valueTemp = configmapTemp.put(v, k);
-					
+
 					String valueHistoricoTemp = configmapHistoricoTemp.put(v, k);
 					configMap3DValueApplicationTemp.put(v, k, aplication);
 
-					if (valueTemp == null && valueHistoricoTemp != null && !valueHistoricoTemp.equals(k)) {
+					if (valueTemp == null && valueHistoricoTemp != null && !valueHistoricoTemp.equals(k)
+&& ("autorizaciones-bff".equals(aplication) || "autorizaciones-bff".equals(configsMaps3DValueDeployment.get(v, configsMaps.get(v))))
+							) {
 						System.out.println("---------------------------------------------------------------------");
 						printErrApplicationKeyValue(aplication, k, v);
-						printErrApplicationKeyValue(configsMaps3DValueApplication.get(v, configsMaps.get(v)), configsMaps.get(v), v);
-						System.out.println("---------------------------------------------------------------------");
+						printErrApplicationKeyValue(configsMaps3DValueDeployment.get(v, configsMaps.get(v)),
+								configsMaps.get(v), v);
 						System.out.println();
 					}
 				}
 			}
 			configsMaps = new HashMap<String, String>(configmapHistoricoTemp);
-			configsMaps3DValueApplication.putAll(configMap3DValueApplicationTemp);
+			configsMaps3DValueDeployment.putAll(configMap3DValueApplicationTemp);
 		}
 
 		if (!applicationKey_conFaltaProtocolo.isEmpty()) {
@@ -158,6 +168,14 @@ public class Resources {
 			applicationKey_conFaltaProtocolo.forEach((k, v) -> System.err.format(leftAlignFormat, k, v, ""));
 		}
 
+	}
+
+	private void sleep() {
+		try {
+			Thread.sleep(5);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static void printApplicationKeyValue(String a, String k, String v) {
@@ -344,6 +362,39 @@ public class Resources {
 		return artefactos;
 	}
 
+	private String getKey3scaleValue() {
+
+		if (KEY_3SCALE_VALUE == null || KEY_3SCALE_VALUE.isBlank())
+			for (String aplication : getArtefactos()) {
+
+				String idConfigmapCommand = "oc get deployments " + aplication
+						+ " -o jsonpath=\"{['spec.template.spec.containers'][0].envFrom[0].configMapRef.name}\"";
+
+				String idConfigmap = clean(ejecute(idConfigmapCommand));
+
+				if (idConfigmap.length() > 3) { // se descarta si no tiene configmap
+					String configMapString = "oc get configmap " + idConfigmap + " -o jsonpath=\"{['data']}\"";
+					configMapString = clean(ejecute(configMapString));
+
+					Map<String, String> configmap = new Gson().fromJson(configMapString, Map.class);
+
+					for (Map.Entry<String, String> entry : configmap.entrySet()) {
+						String v = entry.getValue();
+						String k = entry.getKey();
+						if (k.equals(KEY_3SCALE)) {
+							this.KEY_3SCALE_VALUE = v;
+							return this.KEY_3SCALE_VALUE;
+						}
+					}
+				}
+			}
+
+		if (KEY_3SCALE_VALUE == null || KEY_3SCALE_VALUE.isBlank())
+			System.err.println("No se encontró VALUE de 3scale KEY");
+
+		return KEY_3SCALE_VALUE;
+	}
+
 	final static String HOST_3SCALE = "HOST_3SCALE";
 	final static String KEY_3SCALE = "KEY_3SCALE";
 
@@ -356,7 +407,7 @@ public class Resources {
 
 	Map<String, String> configsMaps = new HashMap<String, String>();
 
-	Table<String, String, String> configsMaps3DValueApplication = newTable();
+	Table<String, String, String> configsMaps3DValueDeployment = newTable();
 
 	private Table<String, String, String> newTable() {
 		return Tables.newCustomTable(Maps.<String, Map<String, String>>newHashMap(),
@@ -366,4 +417,9 @@ public class Resources {
 					}
 				});
 	}
+
+	static {
+
+	}
+
 }

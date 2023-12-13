@@ -14,6 +14,6 @@ public class ResourcesAseVentas {
 	public static void main(String[] data) throws InterruptedException, IOException {
 
 		Main.ejecute(Main.login);
-		new Resources(namespace, useArtefactosDinamicos, null, null).star();
+		new Resources(namespace, useArtefactosDinamicos, null, null, null).star();
 	}
 }

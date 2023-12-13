@@ -13,7 +13,7 @@ public class ResourcesADT {
 
 	public static void main(String[] data) throws InterruptedException, IOException {
 
-		new Resources(namespace, useArtefactosDinamicos, artefactosTags, artefactos).star();
+		new Resources(namespace, useArtefactosDinamicos, artefactosTags, artefactos, null).star();
 		
 	}
 	

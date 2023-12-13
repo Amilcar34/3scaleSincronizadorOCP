@@ -17,12 +17,12 @@ public class ResourcesAseAutorizaciones {
 	public static void main(String[] data) throws InterruptedException, IOException {
 
 		Main.ejecute(Main.login);
-		new Resources(namespace, useArtefactosDinamicos, artefacttosTags, artefactos).star();
+		new Resources(namespace, useArtefactosDinamicos, artefacttosTags, artefactos,
+				"04d6b08b4fd321cd6c9cfea35dac7774").star();
 
 	}
 
-	static String[] artefactos = new String[] { "autorizaciones-ui", "autorizaciones-bff", 
-//			"openshift-activemq",
+	static String[] artefactos = new String[] { "autorizaciones-ui", "autorizaciones-bff", "openshift-activemq",
 			"alertas-api", "aprobaciones-api", "ase-numera-api", "auditor-api", "auth-api", "autorizacion-api",
 			"autorizaciones-brokermq-api", "beneficiario-api", "canal-api", "circuito-api", "documento-auditoria-api",
 			"documento-checklist-api", "docu-check-legacy-api", "efecto-api", "empresa-api", "enfermedades-api",
@@ -31,21 +31,21 @@ public class ResourcesAseAutorizaciones {
 			"reintegros-api", "reintegros-bff", "reintegros-ui", "sanatorio-api" };
 
 	static {
-		artefacttosTags.put("autorizaciones-ui", "20231128185441-migracion-ocp4-bff-V1.6");
-		artefacttosTags.put("autorizaciones-bff", "20231207221518-main");
-//		artefacttosTags.put("openshift-activemq", "7.11.0-8");
+		artefacttosTags.put("autorizaciones-ui", "20231212193945-migracion-ocp4-bff-V1.6");
+		artefacttosTags.put("autorizaciones-bff", "20231212200825-main");
+		artefacttosTags.put("openshift-activemq", "7.11.0-8");
 		artefacttosTags.put("alertas-api", "20231107150731-migracion-ocp4");
-		artefacttosTags.put("aprobaciones-api", "20231211163637-migracion-ocp4-V1.5.5");
+		artefacttosTags.put("aprobaciones-api", "20231212122700-migracion-ocp4-V1.5.5");
 		artefacttosTags.put("ase-numera-api", "20231107132637-migracion-ocp4");
 		artefacttosTags.put("auditor-api", "20231107193410-migracion-ocp4-1.0.0");
 		artefacttosTags.put("auth-api", "20231107192042-migracion-ocp4-V1.5");
 		artefacttosTags.put("autorizacion-api", "20231211170534-migracion-ocp4-V1.5");
-		artefacttosTags.put("autorizaciones-brokermq-api", "20231211175132-migracion-ocp4-noupgrade");
+		artefacttosTags.put("autorizaciones-brokermq-api", "20231212124258-migracion-ocp4-noupgrade");
 		artefacttosTags.put("beneficiario-api", "20231114185437-migracion-ocp4-V1.5.5");
 		artefacttosTags.put("canal-api", "20231114125129-migracion-ocp4");
 		artefacttosTags.put("circuito-api", "20231108151227-migracion-ocp4");
 		artefacttosTags.put("documento-auditoria-api", "20231211153953-migracion-ocp4-V1.5.4");
-		artefacttosTags.put("documento-checklist-api", "20231211154449-migracion-ocp4-V1.5.1");
+		artefacttosTags.put("documento-checklist-api", "20231212125840-migracion-ocp4-V1.5.1");
 		artefacttosTags.put("docu-check-legacy-api", "20231109112600-migracion-opc4-V1.5.1");
 		artefacttosTags.put("efecto-api", "20231116133426-migracion-ocp4");
 		artefacttosTags.put("empresa-api", "20231109124143-migracion-ocp4");

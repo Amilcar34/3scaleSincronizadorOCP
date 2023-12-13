@@ -10,7 +10,7 @@ public class ResourcesNamespacesTest {
 		for (String namespace : namespaces) {
 			System.out.println();
 			System.out.println("---------------------------------------------------TRABAJANDO EN: " + namespace);
-			new Resources(namespace, true, null, null).star();
+			new Resources(namespace, true, null, null, null).star();
 			System.out.println();
 		}
 	}
