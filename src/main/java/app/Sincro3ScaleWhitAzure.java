@@ -1,13 +1,11 @@
 package app;
 
-import static app.Main.ejecute;
-import static app.Main.ejecuteErr;
 
-import java.io.BufferedReader;
+import static app.Main.ejecute;
+import static app.Main.ejecuteResponse;
+
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -37,8 +35,12 @@ public class Sincro3ScaleWhitAzure {
 		this.NAMESPACE = nAMESPACE;
 		this.ssh_repo = sCALE;
 		this.PWD_3SCALE = pWD_3SCALE;
-		this.PATH_3SCALE = PWD_3SCALE + "/test/" + NAMESPACE + "/backends";
 		this.replace = "-" + NAMESPACE;
+	}
+
+	public String getPATH_3SCALE(String PWD_3SCALE) {
+		return PWD_3SCALE + "/test/backends";
+//		return PWD_3SCALE + "/test/" + NAMESPACE + "/backends";
 	}
 
 	public void star() throws InterruptedException, IOException {
@@ -50,36 +52,28 @@ public class Sincro3ScaleWhitAzure {
 		BackendsFrom3Scale();
 		Progress.stall();
 
-		System.out.println("----- Inicializa BackendsFromAzure -----");
-		System.out.println();
+		System.out.println("----- Inicializa BackendsFromAzure -----\n");
 		BackendsFromAzure();
 
-		System.out.println("----- Inicializa BackendsCompare-----");
-		System.out.println();
+		System.out.println("----- Inicializa BackendsCompare-----\n");
 		BackendsCompareName();
 
-		System.out.println("----- Count MappingRules-----");
-		System.out.println();
+		System.out.println("\n----- Count MappingRules-----\n");
 		CompareCountMappingRules();
 
-		System.out.println("----- Content MappingRules segun Azure-----");
-		System.out.println();
+		System.out.println("----- Content MappingRules segun Azure-----\n");
 		CompareContentMappingRulesFromAzure();
 
-		System.out.println("----- Content MappingRules segun 3Scale-----");
-		System.out.println();
+		System.out.println("----- Content MappingRules segun 3Scale-----\n");
 		CompareContentMappingRulesFrom3Scale();
 
-		System.out.println("----- Check de privateBaseURL -----");
-		System.out.println();
+		System.out.println("----- Check de privateBaseURL -----\n");
 		CheckPrivateBaseURL();
 
-		System.out.println("----- Check backend status TEST-----");
-		System.out.println();
+		System.out.println("----- Check backend status TEST-----\n");
 		CheckBackendStatusTest();
 
-		System.out.println("----- Check backend status UAT-----");
-		System.out.println();
+		System.out.println("----- Check backend status UAT-----\n");
 		CheckBackendStatusUAT();
 
 		// oc get backend alertas-api-aseautorizaciones-test -o jsonpath='{.status}'
@@ -100,7 +94,7 @@ public class Sincro3ScaleWhitAzure {
 			backend = backend.replace("test", "uat");
 			String command = "oc get backend " + backend + " -o jsonpath='{.status.conditions}'";
 			try {
-				String ejecute = ejecute(command);
+				String ejecute = ejecuteResponse(command);
 				Condition[] conditions = gson.fromJson(clean(ejecute), Condition[].class);
 				for (Condition condition : conditions) {
 					if (condition.type.equals(Type.Synced))
@@ -122,7 +116,7 @@ public class Sincro3ScaleWhitAzure {
 		Set<String> backends = backendFrom3Scale.keySet();
 
 		backend: for (String backend : backends) {
-			String ejecute = ejecute("oc get backend " + backend + " -o jsonpath='{.status.conditions}'");
+			String ejecute = ejecuteResponse("oc get backend " + backend + " -o jsonpath='{.status.conditions}'");
 			Condition[] conditions = gson.fromJson(clean(ejecute), Condition[].class);
 			for (Condition condition : conditions) {
 				if (condition.type.equals(Type.Synced))
@@ -212,27 +206,23 @@ public class Sincro3ScaleWhitAzure {
 			if (backendFrom3Scale.get(k) == null)
 				System.err.println("no existe " + k + " en 3scale cluster");
 		});
-		System.out.println();
-		System.out.println("----- Verifica cuales BACKENDS existen en CLUSTER-----");
+		System.out.println("\n----- Verifica cuales BACKENDS existen en CLUSTER-----");
 		backendFrom3Scale.forEach((k, v) -> {
 			if (backendsFromAzure.get(k) == null)
 				System.err.println("no existe " + k + " en 3scale AZURE");
 		});
-		System.out.println();
 	}
 
 	private void BackendsFromAzure() throws IOException {
 
 		File[] files = null;
-		if (PATH_3SCALE == null) {
-			files = new File(PATH_3SCALE).listFiles();
-		} else {
+		if (this.PWD_3SCALE == null || this.PWD_3SCALE.isBlank()) {
 			String command = "git clone " + this.ssh_repo;
-			System.out.println(command);
-			ejecuteErr(command);
-			File file = new File("./../../../../");
-			System.out.println(file.getAbsolutePath());
+			ejecute(command);
+			File file = new File(getPATH_3SCALE("./3scale"));
 			files = file.listFiles();
+		} else {
+			files = new File(getPATH_3SCALE(this.PWD_3SCALE)).listFiles();
 		}
 		for (File file : files) {
 			Backend readValue = mapperYAML.readValue(file, Backend.class);
@@ -243,14 +233,14 @@ public class Sincro3ScaleWhitAzure {
 	private void BackendsFrom3Scale() throws JsonMappingException, JsonProcessingException {
 
 		String backends = "oc get products " + NAMESPACE + " -o jsonpath='{.spec.backendUsages}'";
-		backends = ejecute(backends);
+		backends = ejecuteResponse(backends);
 		backends = clean(backends);
 		Map<String, Map<String, String>> backendUsages = new Gson().fromJson(backends, Map.class);
 		Set<String> backendUsageskeySet = backendUsages.keySet();
 
 		for (String k : backendUsageskeySet) {
 
-			String ejecute = ejecute("oc get backend " + k + " -o jsonpath='{.spec}'");
+			String ejecute = ejecuteResponse("oc get backend " + k + " -o jsonpath='{.spec}'");
 			Spec spec = new Gson().fromJson(clean(ejecute), Spec.class);
 			backendFrom3Scale.put(k, spec);
 		}
@@ -270,6 +260,5 @@ public class Sincro3ScaleWhitAzure {
 	static Map<String, Spec> backendFrom3Scale = new HashMap<>();
 	private Map<String, Backend> backendsFromAzure = new HashMap<String, Backend>();
 	private final ObjectMapper mapperYAML = new ObjectMapper(new YAMLFactory());
-	private final String PATH_3SCALE;
 	private final CharSequence replace;
 }

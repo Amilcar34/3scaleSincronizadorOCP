@@ -1,12 +1,14 @@
 package app;
 
-import static app.Main.ejecute;
+import static app.Main.ejecuteResponse;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.common.base.Supplier;
 import com.google.common.collect.Maps;
@@ -26,10 +28,10 @@ public class Resources {
 	private final String namespace;
 	private boolean useArtefactosDinamicos = false;
 	private final Map<String, String> artefactosTags;
-	private final String[] artefactos;
+	private final Set<String> artefactos;
 
 	public Resources(String namespace, boolean useArtefactosDinamicos, Map<String, String> artefacttosTags,
-			String[] artefactos, String key3scaleValue) {
+			Set<String> artefactos, String key3scaleValue) {
 
 		this.namespace = namespace;
 		this.useArtefactosDinamicos = useArtefactosDinamicos;
@@ -43,7 +45,7 @@ public class Resources {
 		selectNamespaceTest();
 		interateProject();
 
-		System.out.println("----- Incorrectos Por Recursos: " + incorrectosRecursos.size());
+		System.out.println("\n----- Incorrectos Por Recursos: " + incorrectosRecursos.size());
 		if (!incorrectosRecursos.isEmpty()) 
 			incorrectosRecursos.forEach(System.out::println);
 
@@ -112,11 +114,11 @@ public class Resources {
 
 			String idConfigmapCommand = "oc get deployments " + aplication
 					+ " -o jsonpath=\"{['spec.template.spec.containers'][0].envFrom[0].configMapRef.name}\"";
-			String idConfigmap = clean(ejecute(idConfigmapCommand));
+			String idConfigmap = clean(ejecuteResponse(idConfigmapCommand));
 
 			if (idConfigmap.length() > 3) { // se descarta si no tiene configmap
 				String configMapString = "oc get configmap " + idConfigmap + " -o jsonpath=\"{['data']}\"";
-				configMapString = clean(ejecute(configMapString));
+				configMapString = clean(ejecuteResponse(configMapString));
 
 				Map<String, String> configmap = new Gson().fromJson(configMapString, Map.class);
 
@@ -142,7 +144,7 @@ public class Resources {
 					if (v.contains("apps.osnoprod01.aseconecta.com.ar") || v.contains(".svc.cluster.local"))
 						if (!v.contains("http"))
 							applicationKey_conFaltaProtocolo.put(aplication, k);
-						else if (v.contains("apps.osnoprod01.aseconecta.com.ar"))
+						else if (v.contains("apps.osnoprod01.aseconecta.com.ar") && !k.equals(HOST_3SCALE))
 							rutasPublicas.put(aplication, k, v);
 
 					// Sieve para filtrar cuando hay un mismo deployment
@@ -165,8 +167,10 @@ public class Resources {
 		}
 
 		if (!applicationKey_conFaltaProtocolo.isEmpty()) {
-			System.err.println("\n Debe contener el protocolo http o https");
+			System.err.println("------------------------------------------------------------------------");
+			System.err.println("\n Debe contener el protocolo HTTP o HTTPS \n");
 			applicationKey_conFaltaProtocolo.forEach((k, v) -> System.err.format(leftAlignFormat, k, v, ""));
+			System.err.println("------------------------------------------------------------------------");
 		}
 
 	}
@@ -195,12 +199,12 @@ public class Resources {
 			String requests = "oc get deployments " + aplication
 					+ " -o jsonpath=\"{['spec.template.spec.containers'][0].livenessProbe}\"";
 
-			requests = clean(ejecute(requests));
+			requests = clean(ejecuteResponse(requests));
 
 			if (requests.isBlank()) {
 				System.err.print(namespace + " ");
 				System.out.println(aplication);
-				System.err.println("ERROR: NO POSEE LivenessProbe");
+				System.err.println("\nERROR: NO POSEE LivenessProbe");
 				incorrectosLivenessProbe.add(aplication);
 			} else {
 				ReadinessProbe resource = new Gson().fromJson(requests, ReadinessProbe.class);
@@ -243,7 +247,7 @@ public class Resources {
 			String requests = "oc get deployments " + aplication
 					+ " -o jsonpath=\"{['spec.template.spec.containers'][0].readinessProbe}\"";
 
-			requests = clean(ejecute(requests));
+			requests = clean(ejecuteResponse(requests));
 			if (requests.isBlank()) {
 				System.err.print(namespace + " ");
 				System.out.println(aplication);
@@ -285,6 +289,7 @@ public class Resources {
 
 	private void iterateRecursos() {
 
+		System.out.println("Arrancó el chequeo por recursos \n");
 		for (String aplication : getArtefactos()) {
 			String limits = "oc get deployments " + aplication
 					+ " -o jsonpath=\"{['spec.template.spec.containers'][0].resources.limits}\"";
@@ -292,8 +297,8 @@ public class Resources {
 					+ " -o jsonpath=\"{['spec.template.spec.containers'][0].resources.requests}\"";
 
 			setTags(aplication);
-			limits = clean(ejecute(limits));
-			requests = clean(ejecute(requests));
+			limits = clean(ejecuteResponse(limits));
+			requests = clean(ejecuteResponse(requests));
 
 			if (requests.isBlank() || limits.isBlank()) {
 				System.err.print(namespace + " ");
@@ -323,7 +328,7 @@ public class Resources {
 
 		String image = "oc get deployments " + aplication
 				+ " -o jsonpath=\"{['spec.template.spec.containers'][0].image}\"";
-		image = ejecute(image);
+		image = ejecuteResponse(image);
 		int length = image.length();
 		image = image.substring(image.lastIndexOf(":"), length);
 		length = image.length();
@@ -344,7 +349,7 @@ public class Resources {
 
 	private void selectNamespaceTest() {
 		String command = "oc project " + namespace;
-		System.out.println(ejecute(command));
+		System.out.println(ejecuteResponse(command));
 	}
 
 	private String clean(String ejecute) {
@@ -353,14 +358,14 @@ public class Resources {
 		return ejecute.substring(0, --lengt);
 	}
 
-	String[] getArtefactos() {
+	Set<String> getArtefactos() {
 
 		if (useArtefactosDinamicos)
 			if (artefactosDinamicos == null) {
 				String command = "oc get deployments -o jsonpath=\"{.items[*]['metadata.name']}\"";
-				String respuesta = ejecute(command);
+				String respuesta = ejecuteResponse(command);
 				String replaceAll = respuesta.replaceAll("\"", "");
-				artefactosDinamicos = replaceAll.split(" ");
+				artefactosDinamicos = Set.of(replaceAll.split(" "));
 				return artefactosDinamicos;
 			} else
 				return artefactosDinamicos;
@@ -375,11 +380,11 @@ public class Resources {
 				String idConfigmapCommand = "oc get deployments " + aplication
 						+ " -o jsonpath=\"{['spec.template.spec.containers'][0].envFrom[0].configMapRef.name}\"";
 
-				String idConfigmap = clean(ejecute(idConfigmapCommand));
+				String idConfigmap = clean(ejecuteResponse(idConfigmapCommand));
 
 				if (idConfigmap.length() > 3) { // se descarta si no tiene configmap
 					String configMapString = "oc get configmap " + idConfigmap + " -o jsonpath=\"{['data']}\"";
-					configMapString = clean(ejecute(configMapString));
+					configMapString = clean(ejecuteResponse(configMapString));
 
 					Map<String, String> configmap = new Gson().fromJson(configMapString, Map.class);
 
@@ -403,7 +408,7 @@ public class Resources {
 	final static String HOST_3SCALE = "HOST_3SCALE";
 	final static String KEY_3SCALE = "KEY_3SCALE";
 
-	String[] artefactosDinamicos;
+	Set<String> artefactosDinamicos;
 
 	Map<String, String> tagsCluster = new HashMap<String, String>();
 	List<String> incorrectosRecursos = new ArrayList<String>();

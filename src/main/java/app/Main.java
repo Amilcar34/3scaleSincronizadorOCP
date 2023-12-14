@@ -23,28 +23,37 @@ import app.model.Status;
 
 public class Main {
 
-	public static String token =  "sha256~lQBUrXtlv708EBjdvFEaICeIOWxlAm1nA2JRSZ2-oqo";
+	private static String token =  "sha256~CuCyqY1gXaQGTgVN3brheNNQJVKerQtzN5mrdGy98is";
 	public static String login = "oc login --token=" + token + " --server=https://api.osnoprod01.aseconecta.com.ar:6443";
 
 	public static void main(String[] args) {
-
+		File file = new File("./3scale");
+		System.out.println(file.getAbsolutePath());
+		System.out.println(file.getPath());
+		String[] files = file.list();
+		for (String string : files) {
+			System.out.println(string);
+		}
 	}
 	
 	public static String login() {
-		return ejecute(login);
+		return ejecuteResponse(login);
 	}
 	
-	public static String ejecute(String command) {
+	public static String ejecuteResponse(String command) {
 //		System.out.println(command);
 		StringBuffer response = null;
 		try {
 			Process proc = Runtime.getRuntime().exec(command);
 
-			BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+			BufferedReader readerInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+			BufferedReader readerError = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
 
-			response = new StringBuffer(reader.read());
+			response = new StringBuffer(readerInput.read());
+//			response = new StringBuffer(readerError.read());
+
 			String line = "";
-			while ((line = reader.readLine()) != null) {
+			while ((line = readerInput.readLine()) != null) {
 				response.append(line + "\n");
 			}
 			proc.waitFor();
@@ -57,10 +66,10 @@ public class Main {
 		return response.toString();
 	}
 	
-    public static void ejecuteErr(String command) {
+    public static void ejecute(String command) {
 		try {
 			Process process = Runtime.getRuntime().exec(command);
-			print(process.getInputStream());
+//			print(process.getInputStream());
 			print(process.getErrorStream());
 			process.waitFor();
 			int exitStatus = process.exitValue();

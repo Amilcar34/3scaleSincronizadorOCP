@@ -3,6 +3,7 @@ package app.resources;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import app.Resources;
 
@@ -13,17 +14,11 @@ public class ResourcesADT {
 
 	public static void main(String[] data) throws InterruptedException, IOException {
 
-		new Resources(namespace, useArtefactosDinamicos, artefactosTags, artefactos, null).star();
+		new Resources(namespace, useArtefactosDinamicos, artefactosTags, artefactosTags.keySet(), null).star();
 		
 	}
 	
-	static String[] artefactos = new String[] { "auditorias-api", "prestaciones-ui", "proxy-prestaciones",
-			"archivos-ui", "casos-api", "especialidades-api", "diagnosticos-api", "legacy-medicamentos-api",
-			"practicas-api", "profesionales-api", "gestion-api", "informes-api", "instituciones-api",
-			"legacy-liquidaciones-api", "legacy-prestadores-api", "prestaciones-ui", "prestadores-api", "reportes-api",
-			"proxy-reverso-api", "sesion-api", "archivos-api", "camdoctor-api" };
-
-	static Map<String, String> artefactosTags = new HashMap<String, String>();
+	private static Map<String, String> artefactosTags = new HashMap<String, String>();
 
 	static {
 		artefactosTags.put("auditorias-api", "20220203193609-develop");

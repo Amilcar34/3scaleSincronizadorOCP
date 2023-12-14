@@ -9,7 +9,7 @@ public class Test {
         print(process.getErrorStream());
         process.waitFor();
         int exitStatus = process.exitValue();
-        System.out.println("exit status: " + exitStatus);
+//        System.out.println("exit status: " + exitStatus);
         File[] files = new File("").listFiles();
         System.out.println("number of files in the directory: " + files.length);
     }
