@@ -21,7 +21,7 @@ public class ResourcesAseAutorizaciones {
 	}
 
 	static {
-		artefactosTags.put("autorizaciones-ui", "20241218131825-migracion-ocp4-bff-V1.7.0");
+		artefactosTags.put("autorizaciones-ui", "20231218131825-migracion-ocp4-bff-V1.7.0");
 		artefactosTags.put("autorizaciones-bff", "20231220131933-migracion-ocp4");
 		artefactosTags.put("openshift-activemq", "7.11.0-8");
 		artefactosTags.put("alertas-api", "20231107150731-migracion-ocp4");
@@ -30,8 +30,8 @@ public class ResourcesAseAutorizaciones {
 		artefactosTags.put("auditor-api", "20231107193410-migracion-ocp4-1.0.0");
 		artefactosTags.put("auth-api", "20231107192042-migracion-ocp4-V1.5");
 		artefactosTags.put("autorizacion-api", "20231221135203-migracion-ocp4-V1.5.4");
+		artefactosTags.put("beneficiario-api", "20231114185437-migracion-ocp4-V1.5.5"); // migracion-ocp4-V1.5.7
 		artefactosTags.put("autorizaciones-brokermq-api", "20231222123929-migracion-ocp4-noupgrade");
-		artefactosTags.put("beneficiario-api", "20231114185437-migracion-ocp4-V1.5.5");
 		artefactosTags.put("canal-api", "20231114125129-migracion-ocp4");
 		artefactosTags.put("circuito-api", "20231108151227-migracion-ocp4");
 		artefactosTags.put("documento-auditoria-api", "20231214194503-migracion-ocp4-V1.5.4");

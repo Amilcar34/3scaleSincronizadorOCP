@@ -66,19 +66,24 @@ public class Resources {
 
 		if (this.useArtefactosDinamicos == false) {
 			System.out.println("\n--- Start: Artefactos - tags DIFERENCIAS: \n");
-			printApplicationKeyValue("Artefacto", " Tag local ", " Tag local Cluster");
+			String format = "| %-20s | %-40s | %-40s | %n";
+			System.out.format(format, "  Artefacto", "  Tag local", "  Tag local Cluster");
 			artefactosTags.forEach((artefacto, imageLocal) -> {
+				sleep();
 				String imageCluster = tagsCluster.get(artefacto);
 				if (!imageCluster.equals(imageLocal))
-					printErrApplicationKeyValue(artefacto, imageLocal, imageCluster);
+					System.err.format(format, artefacto, imageLocal, imageCluster);
 			});
 			System.out.println("\n----- FIN: Artefactos - tags DIFERENCIAS \n");
 		}
 
 		System.out.println("\n----- Artefactos que usan rutas publicas: " + rutasPublicas.size());
 		if (!rutasPublicas.isEmpty()) {
+			
 			System.out.println("- - - Start: Artefactos que usan rutas publicas - - - \n");
+			
 			printErrApplicationKeyValue(" Deployment / Artefacto ", " Variable de entorno ", " Valor ");
+
 			for (Cell<String, String, String> cell : rutasPublicas.cellSet())
 				printApplicationKeyValue(cell.getRowKey(), cell.getColumnKey(), cell.getValue());
 
