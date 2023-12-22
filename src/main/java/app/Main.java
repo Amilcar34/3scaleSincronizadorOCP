@@ -23,10 +23,11 @@ import app.model.Status;
 
 public class Main {
 
-	private static String token =  "sha256~CuCyqY1gXaQGTgVN3brheNNQJVKerQtzN5mrdGy98is";
+	private static String token =  "sha256~lUDTHFM8bos44uqaRq4A_uBRtiydlqgZp_B_5c821X0";
 	public static String login = "oc login --token=" + token + " --server=https://api.osnoprod01.aseconecta.com.ar:6443";
 
 	public static void main(String[] args) {
+		
 		File file = new File("./3scale");
 		System.out.println(file.getAbsolutePath());
 		System.out.println(file.getPath());

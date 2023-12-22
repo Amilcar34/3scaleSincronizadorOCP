@@ -37,41 +37,42 @@ public class Resources {
 		this.useArtefactosDinamicos = useArtefactosDinamicos;
 		this.artefactosTags = artefacttosTags;
 		this.artefactos = artefactos;
-		this.KEY_3SCALE_VALUE = key3scaleValue;
+		selectNamespaceTest();
+		this.KEY_3SCALE_VALUE = getKey3scaleValue(key3scaleValue);
 	}
 
 	public void star() throws InterruptedException, IOException {
 
-		selectNamespaceTest();
 		interateProject();
 
 		System.out.println("\n----- Incorrectos Por Recursos: " + incorrectosRecursos.size());
-		if (!incorrectosRecursos.isEmpty()) 
+		if (!incorrectosRecursos.isEmpty())
 			incorrectosRecursos.forEach(System.out::println);
 
 		System.out.println("\n----- Incorrectos Por ReadinessProbe: " + incorrectosReadinessProbe.size());
-		if (!incorrectosReadinessProbe.isEmpty()) 
+		if (!incorrectosReadinessProbe.isEmpty())
 			incorrectosReadinessProbe.forEach(System.out::println);
 
 		System.out.println("\n----- Incorrectos Por LivenessProbe: " + incorrectosLivenessProbe.size());
-		if (!incorrectosLivenessProbe.isEmpty()) 
+		if (!incorrectosLivenessProbe.isEmpty())
 			incorrectosLivenessProbe.forEach(System.out::println);
-		
+
 //		System.out.println("----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ");
 //		System.out.println("----- Artefactos - tags OCP4: ");
 //		tagsCluster.forEach((k, v) -> System.out.println(k + " - " + v));
 //		
 //		System.out.println("----- Artefactos - tags Docuemnto: ");
 //		artefacttosTags.forEach((k, v) -> System.out.println(k + " - " + v));
-//
+
 		if (this.useArtefactosDinamicos == false) {
 			System.out.println("\n--- Start: Artefactos - tags DIFERENCIAS: \n");
-			artefactosTags.forEach((k, v) -> {
-				if (!tagsCluster.get(k).equals(v)) {
-					System.err.println(k);
-				}
+			printApplicationKeyValue("Artefacto", " Tag local ", " Tag local Cluster");
+			artefactosTags.forEach((artefacto, imageLocal) -> {
+				String imageCluster = tagsCluster.get(artefacto);
+				if (!imageCluster.equals(imageLocal))
+					printErrApplicationKeyValue(artefacto, imageLocal, imageCluster);
 			});
-			System.out.println("----- FIN: Artefactos - tags DIFERENCIAS \n");
+			System.out.println("\n----- FIN: Artefactos - tags DIFERENCIAS \n");
 		}
 
 		System.out.println("\n----- Artefactos que usan rutas publicas: " + rutasPublicas.size());
@@ -83,7 +84,6 @@ public class Resources {
 
 			System.out.println("\n- - - FIN: Artefactos que usan rutas publicas - - -");
 		}
-
 	}
 
 	private void interateProject() {
@@ -129,7 +129,7 @@ public class Resources {
 
 //					printApplicationKeyValue(aplication, k, v);
 
-					if (v.contains(getKey3scaleValue())) {
+					if (this.KEY_3SCALE_VALUE != null && v.contains(this.KEY_3SCALE_VALUE)) {
 						if (!k.equals(KEY_3SCALE)) {
 							System.err.println("Debe llamarse: " + KEY_3SCALE + " pero se llama: " + k);
 							printErrApplicationKeyValue(aplication, k, v);
@@ -372,7 +372,7 @@ public class Resources {
 		return artefactos;
 	}
 
-	private String getKey3scaleValue() {
+	private String getKey3scaleValue(String KEY_3SCALE_VALUE) {
 
 		if (KEY_3SCALE_VALUE == null || KEY_3SCALE_VALUE.isBlank())
 			for (String aplication : getArtefactos()) {
@@ -398,11 +398,13 @@ public class Resources {
 					}
 				}
 			}
+		else
+			this.KEY_3SCALE_VALUE = KEY_3SCALE_VALUE;
 
-		if (KEY_3SCALE_VALUE == null || KEY_3SCALE_VALUE.isBlank())
+		if (this.KEY_3SCALE_VALUE == null || this.KEY_3SCALE_VALUE.isBlank())
 			System.err.println("No se encontró VALUE de 3scale KEY");
 
-		return KEY_3SCALE_VALUE;
+		return this.KEY_3SCALE_VALUE;
 	}
 
 	final static String HOST_3SCALE = "HOST_3SCALE";
@@ -430,7 +432,6 @@ public class Resources {
 	}
 
 	static {
-
 	}
 
 }

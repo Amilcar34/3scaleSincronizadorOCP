@@ -22,7 +22,7 @@ public class ResourcesADT {
 
 	static {
 		artefactosTags.put("auditorias-api", "20220203193609-develop");
-		artefactosTags.put("prestaciones-ui", "20230830220034-develop");
+		artefactosTags.put("prestaciones-ui", "20231110132925-develop");
 		artefactosTags.put("proxy-prestaciones", "20210715215412-develop");
 		artefactosTags.put("archivos-ui", "20221122195928-wpVisualizacion");
 		artefactosTags.put("casos-api", "20230825163128-develop");
