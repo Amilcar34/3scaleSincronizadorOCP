@@ -1,20 +1,21 @@
 package app;
 
+import static app.Main.clean;
 import static app.Main.ejecuteResponse;
+import static app.Main.getConfigMapById;
+import static app.Main.getIdConfigMap;
+import static app.Main.getTag;
+import static app.Main.newTable;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.base.Supplier;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 import com.google.common.collect.Table.Cell;
-import com.google.common.collect.Tables;
 import com.google.gson.Gson;
 
 import app.model.ReadinessProbe;
@@ -79,9 +80,9 @@ public class Resources {
 
 		System.out.println("\n----- Artefactos que usan rutas publicas: " + rutasPublicas.size());
 		if (!rutasPublicas.isEmpty()) {
-			
+
 			System.out.println("- - - Start: Artefactos que usan rutas publicas - - - \n");
-			
+
 			printErrApplicationKeyValue(" Deployment / Artefacto ", " Variable de entorno ", " Valor ");
 
 			for (Cell<String, String, String> cell : rutasPublicas.cellSet())
@@ -117,15 +118,10 @@ public class Resources {
 
 			Table<String, String, String> configMap3DValueApplicationTemp = newTable();
 
-			String idConfigmapCommand = "oc get deployments " + aplication
-					+ " -o jsonpath=\"{['spec.template.spec.containers'][0].envFrom[0].configMapRef.name}\"";
-			String idConfigmap = clean(ejecuteResponse(idConfigmapCommand));
+			String idConfigmap = getIdConfigMap(aplication);
 
 			if (idConfigmap.length() > 3) { // se descarta si no tiene configmap
-				String configMapString = "oc get configmap " + idConfigmap + " -o jsonpath=\"{['data']}\"";
-				configMapString = clean(ejecuteResponse(configMapString));
-
-				Map<String, String> configmap = new Gson().fromJson(configMapString, Map.class);
+				Map<String, String> configmap = getConfigMapById(idConfigmap);
 
 				for (Map.Entry<String, String> entry : configmap.entrySet()) {
 					String v = entry.getValue();
@@ -295,7 +291,7 @@ public class Resources {
 	private void iterateRecursos() {
 
 		System.out.println("Arrancó el chequeo por recursos \n");
-		for (String aplication : getArtefactos()) {
+		for (String aplication : this.getArtefactos()) {
 			String limits = "oc get deployments " + aplication
 					+ " -o jsonpath=\"{['spec.template.spec.containers'][0].resources.limits}\"";
 			String requests = "oc get deployments " + aplication
@@ -331,14 +327,7 @@ public class Resources {
 
 	private void setTags(String aplication) {
 
-		String image = "oc get deployments " + aplication
-				+ " -o jsonpath=\"{['spec.template.spec.containers'][0].image}\"";
-		image = ejecuteResponse(image);
-		int length = image.length();
-		image = image.substring(image.lastIndexOf(":"), length);
-		length = image.length();
-		--length;
-		image = image.substring(1, --length);
+		String image = getTag(aplication);
 		tagsCluster.put(aplication, image);
 	}
 
@@ -355,12 +344,6 @@ public class Resources {
 	private void selectNamespaceTest() {
 		String command = "oc project " + namespace;
 		System.out.println(ejecuteResponse(command));
-	}
-
-	private String clean(String ejecute) {
-		int lengt = ejecute.length();
-		--lengt;
-		return ejecute.substring(0, --lengt);
 	}
 
 	Set<String> getArtefactos() {
@@ -426,15 +409,6 @@ public class Resources {
 
 	Table<String, String, String> configsMaps3DValueDeployment = newTable();
 	Table<String, String, String> rutasPublicas = newTable();
-
-	private Table<String, String, String> newTable() {
-		return Tables.newCustomTable(Maps.<String, Map<String, String>>newHashMap(),
-				new Supplier<Map<String, String>>() {
-					public Map<String, String> get() {
-						return Maps.newHashMap();
-					}
-				});
-	}
 
 	static {
 	}
