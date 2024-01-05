@@ -29,8 +29,8 @@ public class ResourcesAsePrestadores {
 	}
 
 	static {
-		artefacttosTags.put("archivos-ui", "20231204191607-refactor-ocp4");
-		artefacttosTags.put("prestadores-api", "20231206150047-migracion-ocp4");
+		artefacttosTags.put("archivos-ui", "20240103194618-refactor-ocp4");
+		artefacttosTags.put("prestadores-api", "20240103173029-migracion-ocp4");
 		artefacttosTags.put("sesion-api", "20230717130855-migracion-ocp4");
 		artefacttosTags.put("legacy-prestadores-api", "20231206141831-migracion-ocp4");
 	}
