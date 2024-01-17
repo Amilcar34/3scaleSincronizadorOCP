@@ -31,14 +31,15 @@ public class Helper {
 	public static String loginOCP4 = "oc login --token=sha256~" + tokenOCP4
 			+ " --server=https://api.osnoprod01.aseconecta.com.ar:6443";
 
-	private static String tokenOCP3 = "w4rhao2YEj1Gyq--VI_XkPpIMBJ5uhfzJjDztitEOvE";
-	public static String loginOCP3 = "oc login https://openshift.ase.local:443 --token= " + tokenOCP3;
-
+	private static String tokenOCP3 = "aeMno-1z4h_9aM3v2bbvp65UnbESsij_faZlDm0bDS0";
+	public static String loginOCP3 = "oc login https://openshift.ase.local:443 --token=" + tokenOCP3;
 	public static void loginOCP3() {
+		System.out.println(loginOCP3);
 		ejecute(loginOCP3);
 	}
 
 	public static String loginOCP4() {
+		System.out.println(loginOCP3);
 		return ejecuteResponse(loginOCP4);
 	}
 	
@@ -90,7 +91,7 @@ public class Helper {
 	
 	public static void selectNamespace(String namespace) {
 		String command = "oc project " + namespace;
-		System.out.println(ejecuteResponse(command));
+		System.err.println(ejecuteResponse(command));
 	}
 
 	public static String getIdConfigMap(String aplication) {

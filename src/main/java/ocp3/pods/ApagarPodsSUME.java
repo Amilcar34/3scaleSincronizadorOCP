@@ -5,7 +5,8 @@ import app.Helper;
 
 public class ApagarPodsSUME {
 
-	private final static String[] namespaces = { "sume-test", "sume1-test", "sume2-test", "sume3-test" };
+	private final static String[] namespaces = { "sume-test", "sume1-test", "sume2-test", "sume3-test", 
+			"sume-dev", "sume1-dev", "sume2-dev", "sume3-dev" };
 
 	public static void main(String[] args) {
 
