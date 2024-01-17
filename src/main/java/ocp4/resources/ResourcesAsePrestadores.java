@@ -1,20 +1,11 @@
-package app.resources;
+package ocp4.resources;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import com.google.gson.Gson;
-
-import app.Main;
-import app.Main;
+import app.Helper;
 import app.Resources;
-import app.model.ReadinessProbe;
-import app.model.Resource;
 
 public class ResourcesAsePrestadores {
 
@@ -24,7 +15,7 @@ public class ResourcesAsePrestadores {
 
 	public static void main(String[] data) throws InterruptedException, IOException {
 
-		Main.ejecute(Main.login);
+		Helper.loginOCP4();
 		new Resources(namespace, useArtefactosDinamicos, artefacttosTags, artefacttosTags.keySet(), "").star();
 	}
 

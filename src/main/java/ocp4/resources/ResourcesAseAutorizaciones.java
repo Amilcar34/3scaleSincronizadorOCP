@@ -1,10 +1,10 @@
-package app.resources;
+package ocp4.resources;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import app.Main;
+import app.Helper;
 import app.Resources;
 
 public class ResourcesAseAutorizaciones {
@@ -15,7 +15,7 @@ public class ResourcesAseAutorizaciones {
 
 	public static void main(String[] data) throws InterruptedException, IOException {
 
-		Main.login();
+		Helper.loginOCP3();
 		new Resources(namespace, useArtefactosDinamicos, artefactosTags, artefactosTags.keySet(),
 				"04d6b08b4fd321cd6c9cfea35dac7774").star();
 	}

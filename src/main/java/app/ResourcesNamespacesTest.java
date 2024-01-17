@@ -6,7 +6,7 @@ public class ResourcesNamespacesTest {
 
 	public static void main(String[] data) throws InterruptedException, IOException {
 
-		Main.ejecute(Main.login);
+		Helper.loginOCP4();
 		for (String namespace : namespaces) {
 			System.out.println();
 			System.out.println("---------------------------------------------------TRABAJANDO EN: " + namespace);

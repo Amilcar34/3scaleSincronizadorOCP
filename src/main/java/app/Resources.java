@@ -1,11 +1,11 @@
 package app;
 
-import static app.Main.clean;
-import static app.Main.ejecuteResponse;
-import static app.Main.getConfigMapById;
-import static app.Main.getIdConfigMap;
-import static app.Main.getTag;
-import static app.Main.newTable;
+import static app.Helper.clean;
+import static app.Helper.ejecuteResponse;
+import static app.Helper.getConfigMapById;
+import static app.Helper.getIdConfigMap;
+import static app.Helper.getTag;
+import static app.Helper.newTable;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class Resources {
 		this.useArtefactosDinamicos = useArtefactosDinamicos;
 		this.artefactosTags = artefacttosTags;
 		this.artefactos = artefactos;
-		selectNamespaceTest();
+		Helper.selectNamespace(namespace);
 		this.KEY_3SCALE_VALUE = getKey3scaleValue(key3scaleValue);
 	}
 
@@ -341,19 +341,15 @@ public class Resources {
 		return intResource;
 	}
 
-	private void selectNamespaceTest() {
-		String command = "oc project " + namespace;
-		System.out.println(ejecuteResponse(command));
-	}
-
 	Set<String> getArtefactos() {
 
 		if (useArtefactosDinamicos)
 			if (artefactosDinamicos == null) {
-				String command = "oc get deployments -o jsonpath=\"{.items[*]['metadata.name']}\"";
-				String respuesta = ejecuteResponse(command);
-				String replaceAll = respuesta.replaceAll("\"", "");
-				artefactosDinamicos = Set.of(replaceAll.split(" "));
+//				String command = "oc get deployments -o jsonpath=\"{.items[*]['metadata.name']}\"";
+//				String respuesta = ejecuteResponse(command);
+//				String replaceAll = respuesta.replaceAll("\"", "");
+//				artefactosDinamicos = Set.of(replaceAll.split(" "));
+				artefactosDinamicos = Helper.getArtefactos();
 				return artefactosDinamicos;
 			} else
 				return artefactosDinamicos;

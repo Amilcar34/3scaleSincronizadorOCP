@@ -1,9 +1,8 @@
-package app.resources;
+package ocp4.resources;
 
 import java.io.IOException;
 
-import app.Main;
-import app.Main;
+import app.Helper;
 import app.Resources;
 
 public class ResourcesAseVentas {
@@ -13,7 +12,7 @@ public class ResourcesAseVentas {
 
 	public static void main(String[] data) throws InterruptedException, IOException {
 
-		Main.ejecute(Main.login);
+		Helper.loginOCP4();
 		new Resources(namespace, useArtefactosDinamicos, null, null, null).star();
 	}
 }

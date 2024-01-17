@@ -1,21 +1,16 @@
-package app.ambientes;
+package ocp4.ambientes;
 
-import static app.Main.ejecuteResponse;
-import static app.Main.getArtefactos;
-import static app.Main.getTag;
-import static app.Main.login;
-import static app.Main.newTable;
-import static app.Main.getConfigMapByAplication;
+import static app.Helper.ejecuteResponse;
+import static app.Helper.getArtefactos;
+import static app.Helper.getConfigMapByAplication;
+import static app.Helper.getTag;
+import static app.Helper.loginOCP4;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import com.google.common.collect.Table;
 
 public class AseAutorizacionesTestUAT {
 
@@ -24,7 +19,7 @@ public class AseAutorizacionesTestUAT {
 
 	public static void main(String... args) {
 
-		login();
+		loginOCP4();
 
 		// Cargo la referencia
 		pullDeploymentTarget();

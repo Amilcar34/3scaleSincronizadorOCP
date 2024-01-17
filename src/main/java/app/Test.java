@@ -1,33 +1,46 @@
 package app;
 
-import java.io.*;
-public class Test {
-    public static void main(String[] args) throws IOException, InterruptedException {
-        String interpreter = "git clone git@ssh.dev.azure.com:v3/ASEConecta/Auditoria%20de%20Terreno/3scale";
-        Process process = Runtime.getRuntime().exec(interpreter);
-        print(process.getInputStream());
-        print(process.getErrorStream());
-        process.waitFor();
-        int exitStatus = process.exitValue();
-//        System.out.println("exit status: " + exitStatus);
-        File[] files = new File("").listFiles();
-        System.out.println("number of files in the directory: " + files.length);
-    }
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Map;
+import java.util.Set;
 
-    public static void print(InputStream input) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                BufferedReader bf = new BufferedReader(new InputStreamReader(input));
-                String line = null;
-                try {
-                    while ((line = bf.readLine()) != null) {
-                        System.out.println(line);
-                    }
-                } catch (IOException e) {
-                    System.out.println("IOException");
-                }
-            }
-        }).start();
-    }
+public class Test {
+
+	// busca en ADT los que se conectan a la DB pw9tst01-scan.medife.com
+	public static void main(String[] args) throws IOException, InterruptedException {
+
+		Helper.loginOCP4();
+		Helper.selectNamespace("auditoriaterreno-test");
+		Set<String> Artefactos = Helper.getArtefactos();
+		Artefactos.forEach(a -> {
+			Map<String, String> configMap = Helper.getConfigMapByAplication(a);
+			configMap.forEach((k, v) -> {
+				
+				if(configMap.size() > 10 && v.equals("10.3.4.220")) {
+					System.out.println(a);
+				}
+			});
+		});
+		System.out.println("FIN");
+	}
+
+	public static void print(InputStream input) {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				BufferedReader bf = new BufferedReader(new InputStreamReader(input));
+				String line = null;
+				try {
+					while ((line = bf.readLine()) != null) {
+						System.out.println(line);
+					}
+				} catch (IOException e) {
+					System.out.println("IOException");
+				}
+			}
+		}).start();
+	}
 }

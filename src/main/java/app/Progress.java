@@ -1,6 +1,4 @@
-package app.helper;
-
-import java.lang.Thread;
+package app;
 
 public class Progress extends Thread {
 

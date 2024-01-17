@@ -1,10 +1,6 @@
 package app;
 
-import static app.Main.clean;
-import static app.Main.ejecuteResponse;
-
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,9 +8,7 @@ import java.lang.reflect.Type;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,27 +25,23 @@ import com.google.gson.JsonParseException;
 
 import app.model.Status;
 
-public class Main {
+public class Helper {
 
-	private static String token = "z80koHk9jKHvFkmAQDajHEHGJDV9AfLCmNRzm_XhyCg";
-	public static String login = "oc login --token=sha256~" + token
+	private static String tokenOCP4 = "GTZc68ATSklRvMzc64SfpEHtBTlI9t02DzTKiG9JCPU";
+	public static String loginOCP4 = "oc login --token=sha256~" + tokenOCP4
 			+ " --server=https://api.osnoprod01.aseconecta.com.ar:6443";
 
-	public static void main(String[] args) {
+	private static String tokenOCP3 = "w4rhao2YEj1Gyq--VI_XkPpIMBJ5uhfzJjDztitEOvE";
+	public static String loginOCP3 = "oc login https://openshift.ase.local:443 --token= " + tokenOCP3;
 
-		File file = new File("./3scale");
-		System.out.println(file.getAbsolutePath());
-		System.out.println(file.getPath());
-		String[] files = file.list();
-		for (String string : files) {
-			System.out.println(string);
-		}
+	public static void loginOCP3() {
+		ejecute(loginOCP3);
 	}
 
-	public static String login() {
-		return ejecuteResponse(login);
+	public static String loginOCP4() {
+		return ejecuteResponse(loginOCP4);
 	}
-
+	
 	public static String ejecuteResponse(String command) {
 //		System.out.println(command);
 		StringBuffer response = null;
@@ -91,11 +81,16 @@ public class Main {
 	}
 
 	public static Set<String> getArtefactos() {
-
+		//valido para OCP 4, en OCP 3 usar 'deployments' -> 'dc' /DeploimentConfig
 		String command = "oc get deployments -o jsonpath=\"{.items[*]['metadata.name']}\"";
 		String respuesta = ejecuteResponse(command);
 		String replaceAll = respuesta.replaceAll("\"", "").replace("\n", "");
 		return Set.of(replaceAll.split(" "));
+	}
+	
+	public static void selectNamespace(String namespace) {
+		String command = "oc project " + namespace;
+		System.out.println(ejecuteResponse(command));
 	}
 
 	public static String getIdConfigMap(String aplication) {
@@ -116,6 +111,29 @@ public class Main {
 		String idConfigmap = getIdConfigMap(aplication);
 		// se descarta si no tiene configMap
 		return idConfigmap.length() > 3 ? getConfigMapById(idConfigmap) : Map.of();
+	}
+	
+	public static Set<String> getIdsConfigsMapsByNamespace(String namespace) {
+		
+		Set<String> IdsConfigsMaps = new HashSet<String>();
+		selectNamespace(namespace);
+		Set<String> artefactos = getArtefactos();
+		for (String aplication : artefactos) {
+			String idConfigmap = getIdConfigMap(aplication);
+			IdsConfigsMaps.add(idConfigmap);
+		}
+		return IdsConfigsMaps;
+	}
+	
+	public static Set<String> getIdsConfigsMaps() {
+		
+		Set<String> IdsConfigsMaps = new HashSet<String>();
+		Set<String> artefactos = getArtefactos();
+		for (String aplication : artefactos) {
+			String idConfigmap = getIdConfigMap(aplication);
+			IdsConfigsMaps.add(idConfigmap);
+		}
+		return IdsConfigsMaps;
 	}
 
 	public static String clean(String ejecute) {

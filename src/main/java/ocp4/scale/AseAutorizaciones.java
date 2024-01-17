@@ -1,10 +1,10 @@
-package app.scale;
+package ocp4.scale;
+
+import static app.Helper.loginOCP4;
 
 import java.io.IOException;
 
 import app.Sincro3ScaleWhitAzure;
-
-import static app.Main.login;
 
 public class AseAutorizaciones {
 
@@ -14,7 +14,7 @@ public class AseAutorizaciones {
 		String SCALE = "git@ssh.dev.azure.com:v3/ASEConecta/ASEAutorizaciones/3scale";
 		String PWD_3SCALE = "/home/alberino_a/java/3scale";
 
-		login();
+		loginOCP4();
 		new Sincro3ScaleWhitAzure(NAMESPACE, SCALE, PWD_3SCALE).star();
 	}
 	

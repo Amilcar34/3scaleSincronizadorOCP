@@ -1,4 +1,4 @@
-package app.resources;
+package ocp4.resources;
 
 import java.io.IOException;
 import java.util.HashMap;

@@ -1,8 +1,8 @@
 package app;
 
 
-import static app.Main.ejecute;
-import static app.Main.ejecuteResponse;
+import static app.Helper.ejecute;
+import static app.Helper.ejecuteResponse;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +16,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.gson.Gson;
 
-import app.helper.Progress;
 import app.model.Backend;
 import app.model.Condition;
 import app.model.MappingRule;
@@ -87,7 +86,7 @@ public class Sincro3ScaleWhitAzure {
 	private static void CheckBackendStatusUAT() {
 
 		Progress.runner();
-		Gson gson = Main.getGsonCondition();
+		Gson gson = Helper.getGsonCondition();
 		Set<String> backends = backendFrom3Scale.keySet();
 
 		backend: for (String backend : backends) {
@@ -112,7 +111,7 @@ public class Sincro3ScaleWhitAzure {
 
 	private static void CheckBackendStatusTest() {
 		Progress.runner();
-		Gson gson = Main.getGsonCondition();
+		Gson gson = Helper.getGsonCondition();
 		Set<String> backends = backendFrom3Scale.keySet();
 
 		backend: for (String backend : backends) {
