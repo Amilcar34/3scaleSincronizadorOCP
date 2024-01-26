@@ -27,22 +27,20 @@ import app.model.Status;
 
 public class Helper {
 
-	private static String tokenOCP4 = "GTZc68ATSklRvMzc64SfpEHtBTlI9t02DzTKiG9JCPU";
-	public static String loginOCP4 = "oc login --token=sha256~" + tokenOCP4
-			+ " --server=https://api.osnoprod01.aseconecta.com.ar:6443";
+	private static String tokenOCP4 = "NYbH0nG5eEeGQW1_CYJY3NOVq1Pq8x5uA0Maik7q8DI";
 
-	private static String tokenOCP3 = "aeMno-1z4h_9aM3v2bbvp65UnbESsij_faZlDm0bDS0";
-	public static String loginOCP3 = "oc login https://openshift.ase.local:443 --token=" + tokenOCP3;
+	private static String tokenOCP3 = "xAmp3AcutWyVryRuLl_GG90-lKOMCWDiEt--2qocYc4";
+	
 	public static void loginOCP3() {
 		System.out.println(loginOCP3);
 		ejecute(loginOCP3);
 	}
 
 	public static String loginOCP4() {
-		System.out.println(loginOCP3);
+		System.out.println(loginOCP4);
 		return ejecuteResponse(loginOCP4);
 	}
-	
+
 	public static String ejecuteResponse(String command) {
 //		System.out.println(command);
 		StringBuffer response = null;
@@ -82,13 +80,13 @@ public class Helper {
 	}
 
 	public static Set<String> getArtefactos() {
-		//valido para OCP 4, en OCP 3 usar 'deployments' -> 'dc' /DeploimentConfig
+		// valido para OCP 4, en OCP 3 usar 'deployments' -> 'dc' /DeploimentConfig
 		String command = "oc get deployments -o jsonpath=\"{.items[*]['metadata.name']}\"";
 		String respuesta = ejecuteResponse(command);
 		String replaceAll = respuesta.replaceAll("\"", "").replace("\n", "");
 		return Set.of(replaceAll.split(" "));
 	}
-	
+
 	public static void selectNamespace(String namespace) {
 		String command = "oc project " + namespace;
 		System.err.println(ejecuteResponse(command));
@@ -113,9 +111,9 @@ public class Helper {
 		// se descarta si no tiene configMap
 		return idConfigmap.length() > 3 ? getConfigMapById(idConfigmap) : Map.of();
 	}
-	
+
 	public static Set<String> getIdsConfigsMapsByNamespace(String namespace) {
-		
+
 		Set<String> IdsConfigsMaps = new HashSet<String>();
 		selectNamespace(namespace);
 		Set<String> artefactos = getArtefactos();
@@ -125,9 +123,9 @@ public class Helper {
 		}
 		return IdsConfigsMaps;
 	}
-	
+
 	public static Set<String> getIdsConfigsMaps() {
-		
+
 		Set<String> IdsConfigsMaps = new HashSet<String>();
 		Set<String> artefactos = getArtefactos();
 		for (String aplication : artefactos) {
@@ -209,4 +207,8 @@ public class Helper {
 					}
 				});
 	}
+
+	static String loginOCP4 = "oc login --token=sha256~" + tokenOCP4
+			+ " --server=https://api.osnoprod01.aseconecta.com.ar:6443";
+	static String loginOCP3 = "oc login https://openshift.ase.local:443 --token=" + tokenOCP3;
 }

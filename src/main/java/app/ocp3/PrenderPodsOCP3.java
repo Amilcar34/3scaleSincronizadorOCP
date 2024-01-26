@@ -14,11 +14,10 @@ public class PrenderPodsOCP3 {
 
 	public void star() {
 
-		Helper.selectNamespace(namespace);
 		Set<String> artefactos = getArtefactos();
 		System.err.println("Se procede con el PRENDIDO de " + artefactos.size() + " DCs en " + namespace);
 		for (String artefacto : artefactos) {
-			String cmd = "oc scale dc " + artefacto + " --replicas=1";
+			String cmd = "oc scale dc " + artefacto + " --replicas=1 -n " + this.namespace;
 //			System.out.println(cmd);
 			String response = Helper.ejecuteResponse(cmd);
 //			System.out.println(response);
@@ -26,11 +25,12 @@ public class PrenderPodsOCP3 {
 		System.err.println("En " + namespace + " se PRENDIERON " + artefactos.size() + " DCs");
 	}
 
-	public static Set<String> getArtefactos() {
+	public Set<String> getArtefactos() {
 
-		String command = "oc get dc -o jsonpath=\"{.items[*]['metadata.name']}\"";
+		String command = "oc get dc -o jsonpath=\"{.items[*]['metadata.name']}\" -n " + this.namespace ;
 		String respuesta = Helper.ejecuteResponse(command);
 		String replaceAll = respuesta.replaceAll("\"", "").replace("\n", "");
 		return Set.of(replaceAll.split(" "));
 	}
+
 }
