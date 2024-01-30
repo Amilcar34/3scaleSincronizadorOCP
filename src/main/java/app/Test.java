@@ -14,13 +14,29 @@ public class Test {
 	private static final String leftAlignFormat = "| %-18s | %-20s | %-70s | %n";
 
 	private final static String[] namespaces = { 
-//			"sigo-dev", 
-//			"auditoriaterreno-dev", 
-			
-			"sigo-test", 
+			"aseautorizaciones-dev",
+			"aseautorizaciones-test",
+			"aseautorizaciones-uat",
+			"aseprestadores-dev",
+			"aseprestadores-test",
+			"aseprestadores-uat",
+			"aseventas-dev",
+			"aseventas-test",
+			"aseventas-uat",
+			"auditoriaterreno-dev",
 			"auditoriaterreno-test",
-			
-//			"aseautorizaciones-test",
+			"auditoriaterreno-uat",
+			"medifemobile-dev",
+			"medifemobile-test",
+			"medifemobile-uat",
+			"rhpam",
+			"servicioscomunes-dev",
+			"servicioscomunes-test",
+			"servicioscomunes-uat",
+			"sigo-dev",
+			  "sigo-test",
+			"sigo-uat",
+			"sume-uat",
 			};
 
 	// busca en ADT los que se conectan a la DB pw9tst01-scan.medife.com
@@ -40,8 +56,8 @@ public class Test {
 				for (Map.Entry<String, String> entry : configMap.entrySet()) {
 					String k = entry.getKey();
 					String v = entry.getValue();
-					if (v.contains("pw9tst01-scan.medife.com"))
-						System.err.format(leftAlignFormat, a, k, v.replace("apps.openshift.ase.local", "APPS.OPENSHIFT.ASE.LOCAL"));
+					if (v.equals("pw9tst01-scan.medife.com"))
+						System.err.format(leftAlignFormat, namespace, a, v.replace("apps.openshift.ase.local", "APPS.OPENSHIFT.ASE.LOCAL"));
 //					if (v.contains("apps.openshift.ase.local"))
 //						System.err.format(leftAlignFormat, a, k, v);
 					
@@ -49,6 +65,14 @@ public class Test {
 			});
 		}
 		System.out.println("FIN");
+	}
+	
+	public static Set<String> getArtefactos() {
+		// valido para OCP 4, en OCP 3 usar 'deployments' -> 'dc' /DeploimentConfig
+		String command = "oc get dc -o jsonpath=\"{.items[*]['metadata.name']}\"";
+		String respuesta = Helper.ejecuteResponse(command);
+		String replaceAll = respuesta.replaceAll("\"", "").replace("\n", "");
+		return Set.of(replaceAll.split(" "));
 	}
 
 	public static void print(InputStream input) {

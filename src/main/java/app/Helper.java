@@ -27,9 +27,9 @@ import app.model.Status;
 
 public class Helper {
 
-	private static String tokenOCP4 = "NYbH0nG5eEeGQW1_CYJY3NOVq1Pq8x5uA0Maik7q8DI";
+	private static String tokenOCP4 = "H8GaYMv6xYEB2SGeJyTnDDZD5e-wcTVOyvQNXumCi04";
 
-	private static String tokenOCP3 = "xAmp3AcutWyVryRuLl_GG90-lKOMCWDiEt--2qocYc4";
+	private static String tokenOCP3 = "_B-wPhHe-c-6-QLcx0swn4n2cyVXV836ovVQwSV6TFY";
 	
 	public static void loginOCP3() {
 		System.out.println(loginOCP3);
@@ -89,7 +89,8 @@ public class Helper {
 
 	public static void selectNamespace(String namespace) {
 		String command = "oc project " + namespace;
-		System.err.println(ejecuteResponse(command));
+		String ejecuteResponse = ejecuteResponse(command);
+//		System.err.println(ejecuteResponse);
 	}
 
 	public static String getIdConfigMap(String aplication) {
