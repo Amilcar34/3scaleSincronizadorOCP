@@ -27,7 +27,7 @@ import app.model.Status;
 
 public class Helper {
 
-	private static String tokenOCP4 = "H8GaYMv6xYEB2SGeJyTnDDZD5e-wcTVOyvQNXumCi04";
+	private static String tokenOCP4 = "iePGmgMiGpGiGEDW-cf5dSMDv_3zO-kFbvY7i2dRoaU";
 
 	private static String tokenOCP3 = "_B-wPhHe-c-6-QLcx0swn4n2cyVXV836ovVQwSV6TFY";
 	

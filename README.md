@@ -4,9 +4,9 @@ Las ejecuciones que se deseen hacer desde consola deben ser ejecutadas
 
 > mvn exec:java -Dexec.mainClass={{PAQUETE}}.{{CLASE}}
 
-EJ:
+EJ: Apagar todos los pods de OCP 3 para dev y test de ADT y SUME:
 
-> mvn exec:java -Dexec.mainClass=ocp4.scale.AseAutorizaciones
+> mvn exec:java -Dexec.mainClass=ocp3.pods.ApagarPodsSUME
 
 
 Los paquetes teienen la siguiente intencion

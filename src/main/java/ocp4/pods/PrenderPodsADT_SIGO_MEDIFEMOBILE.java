@@ -1,8 +1,9 @@
 package ocp4.pods;
 
 import app.Helper;
+import app.PrenderPodsOCP4;
 
-public class ApagarPodsADT_SIGO_MEDIFEMOBILE {
+public class PrenderPodsADT_SIGO_MEDIFEMOBILE {
 
 //	private final static String[] namespaces = {"auditoriaterreno-dev", "sigo-dev", 
 //			"sigo-test", 
@@ -15,7 +16,7 @@ public class ApagarPodsADT_SIGO_MEDIFEMOBILE {
 		Helper.loginOCP4();
 		for (String namespace : namespaces) {
 			System.out.println();
-			new app.ApagarPodsOCP4(namespace).star();
+			new PrenderPodsOCP4(namespace).star();
 		}
 	}
 }
