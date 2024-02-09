@@ -27,9 +27,9 @@ import app.model.Status;
 
 public class Helper {
 
-	private static String tokenOCP4 = "iePGmgMiGpGiGEDW-cf5dSMDv_3zO-kFbvY7i2dRoaU";
+	private static String tokenOCP4 = "NdwxXbH-4kkECSypeBRyK92N2FitgEjSQWvJZ3Y-dSE";
 
-	private static String tokenOCP3 = "_B-wPhHe-c-6-QLcx0swn4n2cyVXV836ovVQwSV6TFY";
+	private static String tokenOCP3 = "el4CV-lao0R7VS8dV5QSSoPdLYf58xAVFIXx1M-thgs";
 	
 	public static void loginOCP3() {
 		System.out.println(loginOCP3);
@@ -78,21 +78,22 @@ public class Helper {
 		image = image.substring(1, --length);
 		return image;
 	}
-
-	public static Set<String> getArtefactos() {
-		// valido para OCP 4, en OCP 3 usar 'deployments' -> 'dc' /DeploimentConfig
-		String command = "oc get deployments -o jsonpath=\"{.items[*]['metadata.name']}\"";
-		String respuesta = ejecuteResponse(command);
-		String replaceAll = respuesta.replaceAll("\"", "").replace("\n", "");
-		return Set.of(replaceAll.split(" "));
-	}
-
+	
 	public static void selectNamespace(String namespace) {
 		String command = "oc project " + namespace;
 		String ejecuteResponse = ejecuteResponse(command);
 //		System.err.println(ejecuteResponse);
 	}
 
+	// valido para OCP 4, en OCP 3 usar 'deployments' -> 'dc' /DeploimentConfig
+	public static Set<String> getArtefactosOCP4() {
+		String command = "oc get deployments -o jsonpath=\"{.items[*]['metadata.name']}\"";
+		String respuesta = ejecuteResponse(command);
+		String replaceAll = respuesta.replaceAll("\"", "").replace("\n", "");
+		return Set.of(replaceAll.split(" "));
+	}
+
+	// valido para OCP 4, en OCP 3 usar 'deployments' -> 'dc' /DeploimentConfig
 	public static String getIdConfigMap(String aplication) {
 		String idConfigmapCommand = "oc get deployments " + aplication
 				+ " -o jsonpath=\"{['spec.template.spec.containers'][0].envFrom[0].configMapRef.name}\"";
@@ -103,7 +104,13 @@ public class Helper {
 	public static Map<String, String> getConfigMapById(String idConfigmap) {
 
 		String configMapString = "oc get configmap " + idConfigmap + " -o jsonpath=\"{['data']}\"";
+		try {
 		configMapString = clean(ejecuteResponse(configMapString));
+		} catch (NegativeArraySizeException e) {
+			System.err.println("No se enocntro config map para " + idConfigmap + "/nEjecute el siguiente comando para tener mas detalle:");
+			System.err.println(configMapString);
+			configMapString = "";
+		}
 		return configMapString.isBlank() ? Map.of() : new Gson().fromJson(configMapString, Map.class);
 	}
 
@@ -117,7 +124,7 @@ public class Helper {
 
 		Set<String> IdsConfigsMaps = new HashSet<String>();
 		selectNamespace(namespace);
-		Set<String> artefactos = getArtefactos();
+		Set<String> artefactos = getArtefactosOCP4();
 		for (String aplication : artefactos) {
 			String idConfigmap = getIdConfigMap(aplication);
 			IdsConfigsMaps.add(idConfigmap);
@@ -128,7 +135,7 @@ public class Helper {
 	public static Set<String> getIdsConfigsMaps() {
 
 		Set<String> IdsConfigsMaps = new HashSet<String>();
-		Set<String> artefactos = getArtefactos();
+		Set<String> artefactos = getArtefactosOCP4();
 		for (String aplication : artefactos) {
 			String idConfigmap = getIdConfigMap(aplication);
 			IdsConfigsMaps.add(idConfigmap);

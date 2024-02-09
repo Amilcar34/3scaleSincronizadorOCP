@@ -1,7 +1,7 @@
 package ocp4.ambientes;
 
 import static app.Helper.ejecuteResponse;
-import static app.Helper.getArtefactos;
+import static app.Helper.getArtefactosOCP4;
 import static app.Helper.getConfigMapByAplication;
 import static app.Helper.getTag;
 import static app.Helper.loginOCP4;
@@ -91,8 +91,8 @@ public class AseVentasTestUAT {
 	private static void pullDeploymentOrigin() {
 		String command = "oc project " + namespaceOrigin;
 		System.out.println(ejecuteResponse(command));
-		artefactosOrigin = getArtefactos();
-		Set<String> artefactosOriginTemp = getArtefactos();
+		artefactosOrigin = getArtefactosOCP4();
+		Set<String> artefactosOriginTemp = getArtefactosOCP4();
 		artefactosOrigin = artefactosOriginTemp.parallelStream().filter(a -> !a.contains("apicast"))
 				.collect(Collectors.toSet());
 		pullDeployment(namespaceOrigin, deploymentOrigin, artefactosOrigin);
@@ -101,7 +101,7 @@ public class AseVentasTestUAT {
 	private static void pullDeploymentTarget() {
 		String command = "oc project " + namespaceTarget;
 		System.out.println(ejecuteResponse(command));
-		Set<String> artefactosTargetTemp = getArtefactos();
+		Set<String> artefactosTargetTemp = getArtefactosOCP4();
 		artefactosTarget = artefactosTargetTemp.parallelStream().filter(a -> !a.contains("apicast"))
 				.collect(Collectors.toSet());
 		pullDeployment(namespaceTarget, deploymentTarget, artefactosTarget);

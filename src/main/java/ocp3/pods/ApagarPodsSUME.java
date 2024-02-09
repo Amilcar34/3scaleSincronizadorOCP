@@ -5,14 +5,18 @@ import app.Helper;
 
 public class ApagarPodsSUME {
 
-	private final static String[] namespaces = { 
-			"sume-dev", "sume1-dev", "sume2-dev", "sume3-dev",
-			"sume-test"	, "sume1-test","sume2-test", "sume3-test",	
+	private final static String[] namespaces = {
+			"sume2-dev", "sume3-dev",
+			"auditoriaterreno2-dev", "medifemobile-dev",
+
+			"sume-dev",
+			"sume1-dev", 
+			"auditoriaterreno-dev", 
+			"sume2-test", 
 			
-			"auditoriaterreno-test",
-			"auditoriaterreno-dev",
-			"auditoriaterreno2-dev",
-			"auditoriaterreno2-test",
+			"sume1-test","sume3-test",	
+			"sume-test"	, 
+			"auditoriaterreno-test","auditoriaterreno2-test",
 	};
 
 	public static void main(String[] args) {
@@ -21,6 +25,6 @@ public class ApagarPodsSUME {
 		for (String namespace : namespaces) {
 			new ApagarPodsOCP3(namespace).star();
 		}
-
+		System.out.println("FIN");
 	}
 }

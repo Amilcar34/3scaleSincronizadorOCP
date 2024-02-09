@@ -349,7 +349,7 @@ public class Resources {
 //				String respuesta = ejecuteResponse(command);
 //				String replaceAll = respuesta.replaceAll("\"", "");
 //				artefactosDinamicos = Set.of(replaceAll.split(" "));
-				artefactosDinamicos = Helper.getArtefactos();
+				artefactosDinamicos = Helper.getArtefactosOCP4();
 				return artefactosDinamicos;
 			} else
 				return artefactosDinamicos;

@@ -4,11 +4,12 @@ import app.Helper;
 
 public class ApagarPodsADT_SIGO_MEDIFEMOBILE {
 
-//	private final static String[] namespaces = {"auditoriaterreno-dev", "sigo-dev", 
-//			"sigo-test", 
-//			"medifemobile-test", "medifemobile-dev"};
+	private final static String[] namespaces = {
+			"auditoriaterreno-dev", "sigo-dev", "medifemobile-dev"
+//			, "sigo-test", "medifemobile-test", 
+			};
 
-	private final static String[] namespaces = {"auditoriaterreno-test"};
+//	private final static String[] namespaces = {"auditoriaterreno-test"};
 
 	public static void main(String[] args) {
 		

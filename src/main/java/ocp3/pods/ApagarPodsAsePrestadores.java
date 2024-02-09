@@ -5,7 +5,7 @@ import app.Helper;
 
 public class ApagarPodsAsePrestadores {
 
-	private final static String namespace = "aseprestadores-test";
+	private final static String namespace = "aseprestadores-dev";
 	
 	public static void main(String[] args) {
 		Helper.loginOCP3();
