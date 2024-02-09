@@ -1,14 +1,10 @@
 package ocp3.pods;
 
-import app.ocp3.ApagarPodsOCP3;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
 import app.Helper;
+import app.ocp3.ApagarPodsOCP3;
 
 public class ApagarPodsAU_Presta {
 

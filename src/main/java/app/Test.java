@@ -10,8 +10,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import app.ocp3.PrenderPodsOCP3;
-
 public class Test {
 	private static final String leftAlignFormat = "| %-18s | %-20s | %-70s | %n";
 
