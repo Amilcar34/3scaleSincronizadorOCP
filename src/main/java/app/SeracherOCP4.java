@@ -29,15 +29,25 @@ public class SeracherOCP4 {
 			"medifemobile-dev",
 			"medifemobile-test",
 			"medifemobile-uat",
-			"rhpam",
 			"servicioscomunes-dev",
 			"servicioscomunes-test",
 			"servicioscomunes-uat",
 			"sigo-dev",
 			"sigo-test",
 			"sigo-uat",
-			"sume-uat"
-			};
+			"sigoprestaciones-dev",
+			"sigoprestaciones-test",
+			"sigoprestaciones-uat",
+			"sume-dev",
+			"sume-test",
+			"rhpam",
+			"3scale",
+			"ase-rhpam",
+			"rhpam-medife-uat",
+			"rhpam-sandbox",
+			"sonarqube",
+			"sso",
+	};
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 		Set<String> lista = new HashSet<String>();
@@ -56,9 +66,10 @@ public class SeracherOCP4 {
 				for (Map.Entry<String, String> entry : configMap.entrySet()) {
 					String k = entry.getKey();
 					String v = entry.getValue();
-					if (v.contains("kie") ) {
-						lista.add(namespace);	
-						System.err.format(leftAlignFormat, namespace, a, v.replace("apps.openshift.ase.local", "APPS.OPENSHIFT.ASE.LOCAL"));
+					if (v.contains("kie")) {
+						lista.add(namespace);
+						System.err.format(leftAlignFormat, namespace, a,
+								v.replace("apps.openshift.ase.local", "APPS.OPENSHIFT.ASE.LOCAL"));
 					}
 //					if (v.contains("apps.openshift.ase.local"))
 //						System.err.format(leftAlignFormat, a, k, v);

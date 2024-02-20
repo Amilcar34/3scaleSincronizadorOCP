@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,76 +15,70 @@ public class Test {
 	private static final String leftAlignFormat = "| %-18s | %-20s | %-70s | %n";
 
 	private final static String[] namespaces = { 
-//			"aseautorizaciones-dev",
-//			"aseautorizaciones-prod",
-//			"aseautorizaciones-test",
-//			"aseautorizaciones-uat",
-//			"aseautorizaciones2-dev",
-//			"aseautorizaciones2-test",
-//			"aseprestadores-dev",
-//			"aseprestadores-prod",
-//			"aseprestadores-test",
-//			"aseventas-dev",
-//			"aseventas-prod",
-//			"aseventas-test",
-//			"aseventas-uat",
+			"aseautorizaciones-dev",
+			"aseautorizaciones-test",
+			"aseautorizaciones-uat",
+			"aseprestadores-dev",
+			"aseprestadores-test",
+			"aseprestadores-uat",
+			"aseventas-dev",
+			"aseventas-test",
+			"aseventas-uat",
 			"auditoriaterreno-dev",
-			"auditoriaterreno-prod",
 			"auditoriaterreno-test",
 			"auditoriaterreno-uat",
-			"auditoriaterreno2-dev",
-			"auditoriaterreno2-test",
-//			"cicd",
-//			"medifemobile-dev",
-//			"medifemobile-prod",
-//			"medifemobile-test",
-//			"medifemobile-uat",
-//			"servicioscomunes-dev",
-//			"servicioscomunes-prod",
-//			"servicioscomunes-test",
-//			"servicioscomunes-uat",
-//			"sume-dev",
-//			"sume-prod",
-//			"sume-test",
-//			"sume-uat",
-//			"sume1-dev",
-//			"sume1-test",
-//			"sume2-dev",
-//			"sume2-test",
-//			"sume3-dev",
-//			"sume3-test",
+			"medifemobile-dev",
+			"medifemobile-test",
+			"medifemobile-uat",
+			"rhpam",
+			"servicioscomunes-dev",
+			"servicioscomunes-test",
+			"servicioscomunes-uat",
+			"sigo-dev",
+			"sigo-test",
+			"sigo-uat",
+			"3scale",
+			"ase-rhpam",
+			"aseautorizaciones-dev",
+			"aseautorizaciones-test",
+			"aseautorizaciones-uat",
+			"aseprestadores-dev",
+			"aseprestadores-test",
+			"aseprestadores-uat",
+			"aseventas-dev",
+			"aseventas-test",
+			"aseventas-uat",
+			"auditoriaterreno-dev",
+			"auditoriaterreno-test",
+			"auditoriaterreno-uat",
+			"medifemobile-dev",
+			"medifemobile-test",
+			"medifemobile-uat",
+			"rhpam",
+			"rhpam-medife-uat",
+			"rhpam-sandbox",
+			"servicioscomunes-dev",
+			"servicioscomunes-test",
+			"servicioscomunes-uat",
+			"sigo-dev",
+			"sigo-test",
+			"sigo-uat",
+			"sigoprestaciones-dev",
+			"sigoprestaciones-test",
+			"sigoprestaciones-uat",
+			"sonarqube",
+			"sso",
+			"sume-dev",
+			"sume-test",
 			};
 
 	// busca en ADT los que se conectan a la DB pw9tst01-scan.medife.com
 	public static void main(String[] args) throws IOException, InterruptedException {
-		Set<String> lista = new HashSet<String>();
-		System.out.println(LocalDateTime.now());
-		Helper.loginOCP4();
-		for (String namespace : namespaces) {
-			Helper.selectNamespace(namespace);
-			Set<String> artefactos = getArtefactos();
-			artefactos.forEach(a -> {
-				Map<String, String> configMap = new HashMap<String, String>();
-				try {
-					configMap = getConfigMapByAplication(a);
-				} catch (NegativeArraySizeException e) {
-					System.err.println("No se encontro config map para " + a);
-				}
-				for (Map.Entry<String, String> entry : configMap.entrySet()) {
-					String k = entry.getKey();
-					String v = entry.getValue();
-					if (v.contains("kie") ) {
-						lista.add(namespace);	
-						System.err.format(leftAlignFormat, namespace, a, v.replace("apps.openshift.ase.local", "APPS.OPENSHIFT.ASE.LOCAL"));
-					}
-//					if (v.contains("apps.openshift.ase.local"))
-//						System.err.format(leftAlignFormat, a, k, v);
-				}
-			});
-		}
-		lista.forEach(System.out::println);
-		System.out.println(LocalDateTime.now());
-		System.out.println("FIN");
+		Set<String> names = new LinkedHashSet<String>();
+		for (String namespace : namespaces) 
+			names.add(namespace);
+		names.forEach(s -> System.out.println("\"" + s + "\","));
+
 	}
 	
 	public static Map<String, String> getConfigMapByAplication(String aplication) {
