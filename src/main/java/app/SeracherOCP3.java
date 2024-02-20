@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class Test {
+public class SeracherOCP3 {
 	private static final String leftAlignFormat = "| %-18s | %-20s | %-70s | %n";
 
 	private final static String[] namespaces = { 
@@ -54,11 +54,10 @@ public class Test {
 //			"sume3-test",
 			};
 
-	// busca en ADT los que se conectan a la DB pw9tst01-scan.medife.com
 	public static void main(String[] args) throws IOException, InterruptedException {
 		Set<String> lista = new HashSet<String>();
 		System.out.println(LocalDateTime.now());
-		Helper.loginOCP4();
+		Helper.loginOCP3();
 		for (String namespace : namespaces) {
 			Helper.selectNamespace(namespace);
 			Set<String> artefactos = getArtefactos();

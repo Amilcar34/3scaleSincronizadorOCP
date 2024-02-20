@@ -6,17 +6,17 @@ import app.ocp3.PrenderPodsOCP3;
 public class PrenderPodsSUME {
 
 	private final static String[] namespaces = { 
-			"sume2-test", 
-			
-			"auditoriaterreno2-dev",
 //			"sume2-dev",
-//			"sume1-dev", 
-//			"sume-dev",
-//			"sume3-dev", 
-//			"auditoriaterreno-dev",
+//			"sume2-test", 
+//			"auditoriaterreno2-dev",
+//			"auditoriaterreno2-test"
 
-//			"sume-test" , "sume1-test", "sume3-test", 
-//			"auditoriaterreno-test", "auditoriaterreno2-test"
+			"sume1-dev", 
+			"sume-dev",
+			"sume3-dev", 
+			"auditoriaterreno-dev",
+			"sume-test" , "sume1-test", "sume3-test", 
+			"auditoriaterreno-test", 
 			};
 
 	public static void main(String[] args) {

@@ -27,9 +27,9 @@ import app.model.Status;
 
 public class Helper {
 
-	private static String tokenOCP4 = "NdwxXbH-4kkECSypeBRyK92N2FitgEjSQWvJZ3Y-dSE";
+	private static String tokenOCP4 = "m5EzKc9pyOWLlDLGtLL6e5iW0S7PxwllG4QKhOEA6ho";
 
-	private static String tokenOCP3 = "el4CV-lao0R7VS8dV5QSSoPdLYf58xAVFIXx1M-thgs";
+	private static String tokenOCP3 = "Yt9-3QU3z38ctPaWCAIJiYiVfDSd4fn2w-ZJRCVXqTs";
 	
 	public static void loginOCP3() {
 		System.out.println(loginOCP3);

@@ -64,16 +64,16 @@ public class Resources {
 //		
 //		System.out.println("----- Artefactos - tags Docuemnto: ");
 //		artefacttosTags.forEach((k, v) -> System.out.println(k + " - " + v));
-
+		System.out.println(" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ");
 		if (this.useArtefactosDinamicos == false) {
 			System.out.println("\n--- Start: Artefactos - tags DIFERENCIAS: \n");
-			String format = "| %-20s | %-40s | %-40s | %n";
-			System.out.format(format, "  Artefacto", "  Tag local", "  Tag local Cluster");
+			String format = "| %-40s | %-20s | %-40s | %n";
+			System.out.format(format, "  Tag local", "  Artefacto", "  Tag local Cluster");
 			artefactosTags.forEach((artefacto, imageLocal) -> {
 				sleep();
 				String imageCluster = tagsCluster.get(artefacto);
 				if (!imageCluster.equals(imageLocal))
-					System.err.format(format, artefacto, imageLocal, imageCluster);
+					System.err.format(format, imageLocal, artefacto, imageCluster);
 			});
 			System.out.println("\n----- FIN: Artefactos - tags DIFERENCIAS \n");
 		}
