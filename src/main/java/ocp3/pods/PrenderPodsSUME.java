@@ -11,12 +11,16 @@ public class PrenderPodsSUME {
 //			"auditoriaterreno2-dev",
 //			"auditoriaterreno2-test"
 
-			"sume1-dev", 
 			"sume-dev",
+			"sume1-dev", 
 			"sume3-dev", 
+			"sume-test" , 
+			"sume1-test", 
+			"sume3-test", 
 			"auditoriaterreno-dev",
-			"sume-test" , "sume1-test", "sume3-test", 
 			"auditoriaterreno-test", 
+			"medifemobile-dev",
+			"medifemobile-test", 
 			};
 
 	public static void main(String[] args) {

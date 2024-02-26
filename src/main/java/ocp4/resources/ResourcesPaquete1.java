@@ -7,7 +7,7 @@ import java.util.Map;
 import app.Helper;
 import app.Resources;
 
-public class ResourcesADT {
+public class ResourcesPaquete1 {
 
 	static String namespace = "auditoriaterreno-test";
 	static boolean useArtefactosDinamicos = false;
@@ -24,12 +24,12 @@ public class ResourcesADT {
 		map.put("prestaciones-ui", "20231110132925-develop");
 		map.put("proxy-prestaciones", "20240207130057-migracion-ocp4-V1.1.0");
 		map.put("archivos-ui", "20221122195928-wpVisualizacion");
-		map.put("casos-api", "20240219143651-migracion-ocp4-V0.0.1");
+		map.put("casos-api", "20240220194943-migracion-ocp4-V0.0.1");
 		map.put("especialidades-api", "20240219131044-migracion-ocp4");
 		map.put("diagnosticos-api", "20240214124025-migracion-ocp4-V0.0.1");
 		map.put("legacy-medicamentos-api", "20240215181309-migracion-ocp4");
 		map.put("practicas-api", "20240215140644-migracion-ocp4-V0.0.1");
-		map.put("profesionales-api", "20240214131536-migracion-ocp4-V0.0.1");
+		map.put("profesionales-api", "20240221144040-migracion-ocp4-V0.0.1");
 		map.put("gestion-api", "20240206131958-migracion-ocp4");
 		map.put("informes-api", "20240214193224-migracion-ocp4");
 		map.put("instituciones-api", "20240214183229-migracion-ocp4-V1.5.0");

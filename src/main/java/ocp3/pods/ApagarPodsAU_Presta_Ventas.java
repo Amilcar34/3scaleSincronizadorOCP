@@ -6,10 +6,11 @@ import java.time.LocalDateTime;
 import app.Helper;
 import app.ocp3.ApagarPodsOCP3;
 
-public class ApagarPodsAU_Presta {
+public class ApagarPodsAU_Presta_Ventas {
 
 	private final static String[] namespaces = { "aseautorizaciones2-test", "aseautorizaciones2-dev",
-			"aseautorizaciones-dev", "aseautorizaciones-test", "aseprestadores-test", "aseprestadores-dev", };
+			"aseautorizaciones-dev", "aseautorizaciones-test", "aseprestadores-test", "aseprestadores-dev", 
+			"aseventas-test", "aseventas-dev"};
 
 	public static void main(String[] args) {
 

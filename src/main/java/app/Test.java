@@ -14,73 +14,18 @@ import java.util.Set;
 public class Test {
 	private static final String leftAlignFormat = "| %-18s | %-20s | %-70s | %n";
 
-	private final static String[] namespaces = { 
-			"aseautorizaciones-dev",
-			"aseautorizaciones-test",
-			"aseautorizaciones-uat",
-			"aseprestadores-dev",
-			"aseprestadores-test",
-			"aseprestadores-uat",
-			"aseventas-dev",
-			"aseventas-test",
-			"aseventas-uat",
-			"auditoriaterreno-dev",
-			"auditoriaterreno-test",
-			"auditoriaterreno-uat",
-			"medifemobile-dev",
-			"medifemobile-test",
-			"medifemobile-uat",
-			"rhpam",
-			"servicioscomunes-dev",
-			"servicioscomunes-test",
-			"servicioscomunes-uat",
-			"sigo-dev",
-			"sigo-test",
-			"sigo-uat",
-			"3scale",
-			"ase-rhpam",
-			"aseautorizaciones-dev",
-			"aseautorizaciones-test",
-			"aseautorizaciones-uat",
-			"aseprestadores-dev",
-			"aseprestadores-test",
-			"aseprestadores-uat",
-			"aseventas-dev",
-			"aseventas-test",
-			"aseventas-uat",
-			"auditoriaterreno-dev",
-			"auditoriaterreno-test",
-			"auditoriaterreno-uat",
-			"medifemobile-dev",
-			"medifemobile-test",
-			"medifemobile-uat",
-			"rhpam",
-			"rhpam-medife-uat",
-			"rhpam-sandbox",
-			"servicioscomunes-dev",
-			"servicioscomunes-test",
-			"servicioscomunes-uat",
-			"sigo-dev",
-			"sigo-test",
-			"sigo-uat",
-			"sigoprestaciones-dev",
-			"sigoprestaciones-test",
-			"sigoprestaciones-uat",
-			"sonarqube",
-			"sso",
-			"sume-dev",
-			"sume-test",
-			};
+	private final static String[] namespaces = {
 
-	// busca en ADT los que se conectan a la DB pw9tst01-scan.medife.com
+	};
+
 	public static void main(String[] args) throws IOException, InterruptedException {
 		Set<String> names = new LinkedHashSet<String>();
-		for (String namespace : namespaces) 
+		for (String namespace : namespaces)
 			names.add(namespace);
 		names.forEach(s -> System.out.println("\"" + s + "\","));
 
 	}
-	
+
 	public static Map<String, String> getConfigMapByAplication(String aplication) {
 		String idConfigmap = getIdConfigMap(aplication);
 		// se descarta si no tiene configMap
@@ -95,7 +40,8 @@ public class Test {
 	}
 
 	public static Set<String> getArtefactos() {
-		// valido para OCP 3, en OCP 4 usar 'deployments config' -> 'deployments' /Deploiment
+		// valido para OCP 3, en OCP 4 usar 'deployments config' -> 'deployments'
+		// /Deploiment
 		String command = "oc get dc -o jsonpath=\"{.items[*]['metadata.name']}\"";
 		String respuesta = Helper.ejecuteResponse(command);
 		String replaceAll = respuesta.replaceAll("\"", "").replace("\n", "");

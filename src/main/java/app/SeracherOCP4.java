@@ -12,6 +12,7 @@ import java.util.Set;
 
 public class SeracherOCP4 {
 	
+	private static final CharSequence search = "kie";
 
 	private final static String[] namespaces = { 
 			"aseautorizaciones-dev",
@@ -40,8 +41,8 @@ public class SeracherOCP4 {
 			"sigoprestaciones-uat",
 			"sume-dev",
 			"sume-test",
-			"rhpam",
 			"3scale",
+			"rhpam",
 			"ase-rhpam",
 			"rhpam-medife-uat",
 			"rhpam-sandbox",
@@ -66,13 +67,11 @@ public class SeracherOCP4 {
 				for (Map.Entry<String, String> entry : configMap.entrySet()) {
 					String k = entry.getKey();
 					String v = entry.getValue();
-					if (v.contains("kie")) {
+					if (v.contains(search)) {
 						lista.add(namespace);
 						System.err.format(leftAlignFormat, namespace, a,
 								v.replace("apps.openshift.ase.local", "APPS.OPENSHIFT.ASE.LOCAL"));
 					}
-//					if (v.contains("apps.openshift.ase.local"))
-//						System.err.format(leftAlignFormat, a, k, v);
 				}
 			});
 		}

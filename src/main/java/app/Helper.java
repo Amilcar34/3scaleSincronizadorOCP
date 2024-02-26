@@ -27,9 +27,9 @@ import app.model.Status;
 
 public class Helper {
 
-	private static String tokenOCP4 = "m5EzKc9pyOWLlDLGtLL6e5iW0S7PxwllG4QKhOEA6ho";
-
-	private static String tokenOCP3 = "Yt9-3QU3z38ctPaWCAIJiYiVfDSd4fn2w-ZJRCVXqTs";
+	private static String tokenOCP3 = "X3XjVHho9ooIr1T9vfOHqra9uWqj-yyM7TGZKzitSVI";
+	
+	private static String tokenOCP4 = "iPUShJBmLARZeESFetQfd9TAfyy2frVP7_4X9NWdud0";
 	
 	public static void loginOCP3() {
 		System.out.println(loginOCP3);
@@ -68,9 +68,10 @@ public class Helper {
 	}
 
 	public static String getTag(String aplication) {
-		String image = "oc get deployments " + aplication
+		String cmd = "oc get deployments " + aplication
 				+ " -o jsonpath=\"{['spec.template.spec.containers'][0].image}\"";
-		image = ejecuteResponse(image);
+		String image = ejecuteResponse(cmd);
+		if(image.isBlank()) return image;
 		int length = image.length();
 		image = image.substring(image.lastIndexOf(":"), length);
 		length = image.length();
@@ -82,7 +83,7 @@ public class Helper {
 	public static void selectNamespace(String namespace) {
 		String command = "oc project " + namespace;
 		String ejecuteResponse = ejecuteResponse(command);
-//		System.err.println(ejecuteResponse);
+		System.err.println(ejecuteResponse);
 	}
 
 	// valido para OCP 4, en OCP 3 usar 'deployments' -> 'dc' /DeploimentConfig

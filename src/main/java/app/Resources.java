@@ -363,9 +363,13 @@ public class Resources {
 
 				String idConfigmapCommand = "oc get deployments " + aplication
 						+ " -o jsonpath=\"{['spec.template.spec.containers'][0].envFrom[0].configMapRef.name}\"";
-
-				String idConfigmap = clean(ejecuteResponse(idConfigmapCommand));
-
+				String idConfigmap = "";
+				try {
+					idConfigmap = clean(ejecuteResponse(idConfigmapCommand));
+				}catch (NegativeArraySizeException e) {
+					System.err.println("NO se encontro un deployment para " + aplication);
+					System.err.println("Ejecutar \n" + idConfigmap);
+				}
 				if (idConfigmap.length() > 3) { // se descarta si no tiene configmap
 					String configMapString = "oc get configmap " + idConfigmap + " -o jsonpath=\"{['data']}\"";
 					configMapString = clean(ejecuteResponse(configMapString));

@@ -11,47 +11,49 @@ import java.util.Map;
 import java.util.Set;
 
 public class SeracherOCP3 {
-	private static final String leftAlignFormat = "| %-18s | %-20s | %-70s | %n";
+
+	private static final String searcher_value = "broker-jolokia-auditoriaterreno-test.apps.openshift.ase.local";
+	private static final String searcher_key = "";
 
 	private final static String[] namespaces = { 
-//			"aseautorizaciones-dev",
-//			"aseautorizaciones-prod",
-//			"aseautorizaciones-test",
-//			"aseautorizaciones-uat",
-//			"aseautorizaciones2-dev",
-//			"aseautorizaciones2-test",
-//			"aseprestadores-dev",
-//			"aseprestadores-prod",
-//			"aseprestadores-test",
-//			"aseventas-dev",
-//			"aseventas-prod",
-//			"aseventas-test",
-//			"aseventas-uat",
+			"aseautorizaciones-dev",
+			"aseautorizaciones-test",
+			"aseautorizaciones-uat",
+			"aseautorizaciones-prod",
+			"aseautorizaciones2-dev",
+			"aseautorizaciones2-test",
+			"aseprestadores-dev",
+			"aseprestadores-test",
+			"aseprestadores-prod",
+			"aseventas-dev",
+			"aseventas-test",
+			"aseventas-uat",
+			"aseventas-prod",
 			"auditoriaterreno-dev",
-			"auditoriaterreno-prod",
 			"auditoriaterreno-test",
 			"auditoriaterreno-uat",
+			"auditoriaterreno-prod",
 			"auditoriaterreno2-dev",
 			"auditoriaterreno2-test",
-//			"cicd",
-//			"medifemobile-dev",
-//			"medifemobile-prod",
-//			"medifemobile-test",
-//			"medifemobile-uat",
-//			"servicioscomunes-dev",
-//			"servicioscomunes-prod",
-//			"servicioscomunes-test",
-//			"servicioscomunes-uat",
-//			"sume-dev",
-//			"sume-prod",
-//			"sume-test",
-//			"sume-uat",
-//			"sume1-dev",
-//			"sume1-test",
-//			"sume2-dev",
-//			"sume2-test",
-//			"sume3-dev",
-//			"sume3-test",
+			"medifemobile-dev",
+			"medifemobile-test",
+			"medifemobile-uat",
+			"medifemobile-prod",
+			"servicioscomunes-dev",
+			"servicioscomunes-test",
+			"servicioscomunes-uat",
+			"servicioscomunes-prod",
+			"sume-dev",
+			"sume-uat",
+			"sume-test",
+			"sume-prod",
+			"sume1-dev",
+			"sume1-test",
+			"sume2-dev",
+			"sume2-test",
+			"sume3-dev",
+			"sume3-test",
+			"cicd",
 			};
 
 	public static void main(String[] args) throws IOException, InterruptedException {
@@ -71,12 +73,10 @@ public class SeracherOCP3 {
 				for (Map.Entry<String, String> entry : configMap.entrySet()) {
 					String k = entry.getKey();
 					String v = entry.getValue();
-					if (v.contains("kie") ) {
+					if (v.contains(searcher_value) && k.contains(searcher_key)) {
 						lista.add(namespace);	
-						System.err.format(leftAlignFormat, namespace, a, v.replace("apps.openshift.ase.local", "APPS.OPENSHIFT.ASE.LOCAL"));
+						System.err.format(leftAlignFormat, namespace, a, v);
 					}
-//					if (v.contains("apps.openshift.ase.local"))
-//						System.err.format(leftAlignFormat, a, k, v);
 				}
 			});
 		}
@@ -122,4 +122,5 @@ public class SeracherOCP3 {
 			}
 		}).start();
 	}
+	private static final String leftAlignFormat = "| %-18s | %-20s | %-70s | %n";
 }
