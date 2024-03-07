@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class SeracherOCP3 {
 
-	private static final String searcher_value = "broker-jolokia-auditoriaterreno-test.apps.openshift.ase.local";
+	private static final String searcher_value = "prestaciones-broker-auditoriaterreno";
 	private static final String searcher_key = "";
 
 	private final static String[] namespaces = { 

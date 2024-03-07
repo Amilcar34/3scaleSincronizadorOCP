@@ -26,10 +26,9 @@ import com.google.gson.JsonParseException;
 import app.model.Status;
 
 public class Helper {
-
-	private static String tokenOCP3 = "X3XjVHho9ooIr1T9vfOHqra9uWqj-yyM7TGZKzitSVI";
+	private static String tokenOCP3 = "S37w6DLdbcAFOeK76--WM72SmE7_vkp2SQXJUsqRV7s";
 	
-	private static String tokenOCP4 = "iPUShJBmLARZeESFetQfd9TAfyy2frVP7_4X9NWdud0";
+	private static String tokenOCP4 = "2r5FIeuINve9bjDPBF6YSexDUL91nDFl9g61qWVL_pc";
 	
 	public static void loginOCP3() {
 		System.out.println(loginOCP3);
@@ -90,6 +89,14 @@ public class Helper {
 	public static Set<String> getArtefactosOCP4() {
 		String command = "oc get deployments -o jsonpath=\"{.items[*]['metadata.name']}\"";
 		String respuesta = ejecuteResponse(command);
+		String replaceAll = respuesta.replaceAll("\"", "").replace("\n", "");
+		return Set.of(replaceAll.split(" "));
+	}
+	
+	// valido para OCP 3, en OCP 4 usar 'deployments config' -> 'deployments'
+	public static Set<String> getArtefactosOCP3() {
+		String command = "oc get dc -o jsonpath=\"{.items[*]['metadata.name']}\"";
+		String respuesta = Helper.ejecuteResponse(command);
 		String replaceAll = respuesta.replaceAll("\"", "").replace("\n", "");
 		return Set.of(replaceAll.split(" "));
 	}

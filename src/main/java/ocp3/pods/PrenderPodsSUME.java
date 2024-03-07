@@ -9,7 +9,7 @@ public class PrenderPodsSUME {
 //			"sume2-dev",
 //			"sume2-test", 
 //			"auditoriaterreno2-dev",
-//			"auditoriaterreno2-test"
+//			"auditoriaterreno2-test",
 
 			"sume-dev",
 			"sume1-dev", 

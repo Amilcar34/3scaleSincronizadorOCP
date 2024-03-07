@@ -10,20 +10,67 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.google.common.collect.Table;
 
 public class Test {
-	private static final String leftAlignFormat = "| %-18s | %-20s | %-70s | %n";
 
-	private final static String[] namespaces = {
-
-	};
+	final static String namespaceOCP3 = "auditoriaterreno-prod";
+	final static String namespaceOCP4 = "auditoriaterreno-test";
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-		Set<String> names = new LinkedHashSet<String>();
-		for (String namespace : namespaces)
-			names.add(namespace);
-		names.forEach(s -> System.out.println("\"" + s + "\","));
 
+		Helper.loginOCP3();
+		Helper.selectNamespace(namespaceOCP3);
+		Set<String> artefactsOCP3 = Helper.getArtefactosOCP3();
+		artefactsOCP3 = cleansNumers(artefactsOCP3);
+		
+		for (String artefactOCP3 : artefactsOCP3) {
+			System.out.println(artefactOCP3);
+			Helper.loginOCP3();
+			Helper.selectNamespace(namespaceOCP4);
+			Map<String, String> configsMapsOCP3 = getConfigMapByAplication(artefactOCP3);
+			
+			Helper.loginOCP4();
+			Helper.selectNamespace(namespaceOCP4);
+			String artefactOCP4 = search(artefactOCP3);
+			Map<String, String> configsMapsOCP4 = Helper.getConfigMapByAplication(artefactOCP3);
+			
+			if(configsMapsOCP3.equals(configsMapsOCP4))
+				System.out.println(artefactOCP3 + " esta OK");
+			else
+				System.err.println(artefactOCP3 + " hay diferencias");
+			
+			System.out.println(" - - - - FIN - - - - ");
+		}
+		
+	}
+
+	private static String search(String artefactOCP3) {
+		Helper.loginOCP4();
+		Helper.selectNamespace(namespaceOCP4);
+		Set<String> artefactsOCP4 = Helper.getArtefactosOCP4();
+		for (String artefactOCP4 : artefactsOCP4) {
+			if(artefactOCP3.equals(artefactOCP4))
+				return artefactOCP4;
+		}
+		System.out.println(artefactOCP3);
+		for (String artefactOCP4 : artefactsOCP4) {
+			System.err.println(artefactOCP4);
+		}
+		return null;
+	}
+
+	private static Set<String> cleansNumers(Set<String> artefactsOCP3) {
+		Set<String> artefactsOCP3Temp = new HashSet<String>();
+		for (String artefactOCP3 : artefactsOCP3) {
+			if (artefactOCP3.contains("-2")) 
+				artefactsOCP3Temp.add(artefactOCP3.substring(0, artefactOCP3.indexOf("-2")));
+			if (artefactOCP3.contains("-1")) 
+				artefactsOCP3Temp.add(artefactOCP3.substring(0, artefactOCP3.indexOf("-1")));
+		}
+		return artefactsOCP3Temp;
 	}
 
 	public static Map<String, String> getConfigMapByAplication(String aplication) {
@@ -37,15 +84,6 @@ public class Test {
 				+ " -o jsonpath=\"{['spec.template.spec.containers'][0].envFrom[0].configMapRef.name}\"";
 		String idConfigmap = Helper.clean(Helper.ejecuteResponse(idConfigmapCommand));
 		return idConfigmap;
-	}
-
-	public static Set<String> getArtefactos() {
-		// valido para OCP 3, en OCP 4 usar 'deployments config' -> 'deployments'
-		// /Deploiment
-		String command = "oc get dc -o jsonpath=\"{.items[*]['metadata.name']}\"";
-		String respuesta = Helper.ejecuteResponse(command);
-		String replaceAll = respuesta.replaceAll("\"", "").replace("\n", "");
-		return Set.of(replaceAll.split(" "));
 	}
 
 	public static void print(InputStream input) {
@@ -64,4 +102,6 @@ public class Test {
 			}
 		}).start();
 	}
+
+	private static final String leftAlignFormat = "| %-18s | %-20s | %-70s | %n";
 }
