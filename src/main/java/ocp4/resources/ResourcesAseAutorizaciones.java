@@ -16,8 +16,12 @@ public class ResourcesAseAutorizaciones {
 	public static void main(String[] data) throws InterruptedException, IOException {
 
 		Helper.loginOCP4();
-		new Resources(namespace, useArtefactosDinamicos, artefactosTags, artefactosTags.keySet(),
-				"04d6b08b4fd321cd6c9cfea35dac7774").star();
+//		new Resources(namespace, useArtefactosDinamicos, artefactosTags, artefactosTags.keySet(),
+//				"04d6b08b4fd321cd6c9cfea35dac7774").star();
+		boolean useArtefactosDinamicos = true;
+		new Resources(namespace, useArtefactosDinamicos, null, null,
+				null).star();
+		
 	}
 
 	static {

@@ -25,11 +25,14 @@ import com.google.gson.JsonParseException;
 
 import app.model.Status;
 
-public class Helper {
-	private static String tokenOCP3 = "S37w6DLdbcAFOeK76--WM72SmE7_vkp2SQXJUsqRV7s";
-	
-	private static String tokenOCP4 = "2r5FIeuINve9bjDPBF6YSexDUL91nDFl9g61qWVL_pc";
-	
+public final strictfp class Helper {
+
+	private static String tokenOCP3 = "bOCoKUXI6OQ2uUfTfayjeb6bwAbip7RsIy-o1YVF658";
+
+	public static transient volatile double pepe = 1.3;
+
+	private static String tokenOCP4 = "t8o7Y6kWN3wziqFeOzyTTQsJ48C0D2Z-n6Mgh7WeaxM";
+
 	public static void loginOCP3() {
 		System.out.println(loginOCP3);
 		ejecute(loginOCP3);
@@ -70,7 +73,8 @@ public class Helper {
 		String cmd = "oc get deployments " + aplication
 				+ " -o jsonpath=\"{['spec.template.spec.containers'][0].image}\"";
 		String image = ejecuteResponse(cmd);
-		if(image.isBlank()) return image;
+		if (image.isBlank())
+			return image;
 		int length = image.length();
 		image = image.substring(image.lastIndexOf(":"), length);
 		length = image.length();
@@ -78,11 +82,11 @@ public class Helper {
 		image = image.substring(1, --length);
 		return image;
 	}
-	
+
 	public static void selectNamespace(String namespace) {
 		String command = "oc project " + namespace;
 		String ejecuteResponse = ejecuteResponse(command);
-		System.err.println(ejecuteResponse);
+//		System.err.println(ejecuteResponse);
 	}
 
 	// valido para OCP 4, en OCP 3 usar 'deployments' -> 'dc' /DeploimentConfig
@@ -92,7 +96,7 @@ public class Helper {
 		String replaceAll = respuesta.replaceAll("\"", "").replace("\n", "");
 		return Set.of(replaceAll.split(" "));
 	}
-	
+
 	// valido para OCP 3, en OCP 4 usar 'deployments config' -> 'deployments'
 	public static Set<String> getArtefactosOCP3() {
 		String command = "oc get dc -o jsonpath=\"{.items[*]['metadata.name']}\"";
@@ -113,9 +117,10 @@ public class Helper {
 
 		String configMapString = "oc get configmap " + idConfigmap + " -o jsonpath=\"{['data']}\"";
 		try {
-		configMapString = clean(ejecuteResponse(configMapString));
+			configMapString = clean(ejecuteResponse(configMapString));
 		} catch (NegativeArraySizeException e) {
-			System.err.println("No se enocntro config map para " + idConfigmap + "/nEjecute el siguiente comando para tener mas detalle:");
+			System.err.println("No se enocntro config map para " + idConfigmap
+					+ "/nEjecute el siguiente comando para tener mas detalle:");
 			System.err.println(configMapString);
 			configMapString = "";
 		}
@@ -138,6 +143,20 @@ public class Helper {
 			IdsConfigsMaps.add(idConfigmap);
 		}
 		return IdsConfigsMaps;
+	}
+
+	public static String[] getPipelineByNamespace(String namespace) {
+		String cmd = "oc get pipeline -n " + namespace + " -o jsonpath=\"{.items[*].metadata.name}\"";
+		String response = ejecuteResponse(cmd);
+		return response.replace("\"", "").split(" ");
+	}
+
+	public static String[] getTasksByNamespaceAndPipeline(String namespace, String pipeline) {
+		String filter = " -n " + namespace;
+		String cmd = "oc get pipeline " + pipeline + filter + " -o jsonpath=\"{.spec.tasks[*].name}\"";
+		String response = ejecuteResponse(cmd);
+		response = clean(response);
+		return response.split(" ");
 	}
 
 	public static Set<String> getIdsConfigsMaps() {
@@ -226,5 +245,7 @@ public class Helper {
 
 	static String loginOCP4 = "oc login --token=sha256~" + tokenOCP4
 			+ " --server=https://api.osnoprod01.aseconecta.com.ar:6443";
+
 	static String loginOCP3 = "oc login https://openshift.ase.local:443 --token=" + tokenOCP3;
+
 }

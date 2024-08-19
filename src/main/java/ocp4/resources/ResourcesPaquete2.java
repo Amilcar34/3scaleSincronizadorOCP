@@ -21,22 +21,20 @@ public class ResourcesPaquete2 {
 	private static Map<String, String> sigo = new HashMap<String, String>();
 
 	static {
-		auditoriaterreno.put("autorizaciones-api", "");
-//		auditoriaterreno.put("autorizaciones-cron-detele-archivos", "");
-//		auditoriaterreno.put("autorizaciones-cron-mas-informacion", "");
-//		auditoriaterreno.put("autorizaciones-cron-send-mails", "");
-		auditoriaterreno.put("autorizaciones-ui", "");
-		auditoriaterreno.put("bff-autorizaciones", "");
-//		auditoriaterreno.put("broker-amq", "");
-		auditoriaterreno.put("legacy-asociado-api", "");
-		auditoriaterreno.put("lifia-integracion-api", "");
-		auditoriaterreno.put("prestaciones-broker", "");
-		auditoriaterreno.put("som-integracion-api", "");
-		medifeMoblie.put("prestadores-api", "");
-		medifeMoblie.put("traditum-integracion-api", "");
-		sigo.put("archivos-api", "");
-		sigo.put("asociados-api", "");
-		sigo.put("comision-venta-api", "");
+		auditoriaterreno.put("autorizaciones-api", "20240305184021-migracion-ocp4-V0.0.1");
+		auditoriaterreno.put("autorizaciones-ui", "20230317205411-develop-febrero");
+		auditoriaterreno.put("bff-autorizaciones", "20230306194423-develop");
+		auditoriaterreno.put("legacy-asociado-api", "20230505145849-develop-vistas");
+		auditoriaterreno.put("lifia-integracion-api", "20230919142747-develop");
+		auditoriaterreno.put("prestaciones-broker", "20230322143819-develop");
+		auditoriaterreno.put("som-integracion-api", "20230825163930-develop");
+		medifeMoblie.put("prestadores-api", "20231019220135-develop");
+		medifeMoblie.put("traditum-integracion-api", "20220915163931-develop");
+		medifeMoblie.put("proxy-api", "20230914000150-v_1.0");
+		medifeMoblie.put("medife-mobile-api", "20240105182416-develop");
+		sigo.put("archivos-api", "20220317203952-develop-ers-9");
+		sigo.put("asociados-api", "20220308181843-develop-ers-9");
+		sigo.put("comision-venta-api", "0.0.1-SNAPSHOT");
 		sigo.put("empresas-api", "");
 		sigo.put("engage-integracion-api", "");
 		sigo.put("facturacion-api", "");

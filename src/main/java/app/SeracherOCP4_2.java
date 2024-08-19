@@ -10,55 +10,43 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class SeracherOCP4 {
+public class SeracherOCP4_2 {
 	
-	private static final CharSequence search_key = "prestaciones-broker";
-	private static final CharSequence search_value = "BROKER_PRESTACIONES";
+	private static final CharSequence search_key = "";
+	private static final CharSequence search_value = "10.3.4.220";
+
+	private static String tokenOCP4 = "0244_hIvfyiWah6xn6HG4rPfgHgmEypoyUYx6ApYVAQ";
 
 	private final static String[] namespaces = { 
-			"aseautorizaciones-dev",
 			"aseautorizaciones-test",
-			"aseautorizaciones-uat",
-			"aseprestadores-dev",
-			"aseprestadores-test",
-			"aseprestadores-uat",
 			"aseventas-dev",
 			"aseventas-test",
-			"aseventas-uat",
 			"auditoriaterreno-dev",
+			"auditoriaterreno-prod",
 			"auditoriaterreno-test",
 			"auditoriaterreno-uat",
-			"medifemobile-dev",
+			"auditoriaterreno2-dev",
+			"medifemobile-prod",
 			"medifemobile-test",
-			"medifemobile-uat",
-			"servicioscomunes-dev",
+			"servicioscomunes-prod",
 			"servicioscomunes-test",
-			"servicioscomunes-uat",
-			"sigo-dev",
-			"sigo-test",
-			"sigo-uat",
-			"sigoprestaciones-dev",
-			"sigoprestaciones-test",
-			"sigoprestaciones-uat",
+			"servidores-prod",
 			"sume-dev",
+			"sume-prod",
 			"sume-test",
-			"3scale",
-			"rhpam",
-			"ase-rhpam",
-			"rhpam-medife-uat",
-			"rhpam-sandbox",
-			"sonarqube",
-			"sso",
+			"sume-uat",
 	};
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 		Set<String> lista = new HashSet<String>();
 		System.out.println(LocalDateTime.now());
-		Helper.loginOCP4();
+		loginOCP4();
 		for (String namespace : namespaces) {
 			Helper.selectNamespace(namespace);
 			Set<String> artefactos = Helper.getArtefactosOCP4();
+//			System.out.println("artefactos " + artefactos.size());
 			artefactos.forEach(a -> {
+//				System.out.println(a);
 				Map<String, String> configMap = new HashMap<String, String>();
 				try {
 					configMap = Helper.getConfigMapByAplication(a);
@@ -68,7 +56,7 @@ public class SeracherOCP4 {
 				for (Map.Entry<String, String> entry : configMap.entrySet()) {
 					String k = entry.getKey();
 					String v = entry.getValue();
-					if (k.contains(search_key) && v.equals(search_value)) {
+					if (k.contains(search_key) && v.contains(search_value)) {
 						lista.add(namespace);
 						System.err.format(leftAlignFormat, namespace, a, v);
 					}
@@ -78,6 +66,11 @@ public class SeracherOCP4 {
 		lista.forEach(System.out::println);
 		System.out.println(LocalDateTime.now());
 		System.out.println("FIN");
+	}
+	
+	public static String loginOCP4() {
+		System.out.println(loginOCP4);
+		return Helper.ejecuteResponse(loginOCP4);
 	}
 
 	public static void print(InputStream input) {
@@ -97,5 +90,7 @@ public class SeracherOCP4 {
 		}).start();
 	}
 
+	static String loginOCP4 = "oc login --token=sha256~" + tokenOCP4
+			+ " --server=https://api.osprod01.aseconecta.com.ar:6443";
 	private static final String leftAlignFormat = "| %-18s | %-20s | %-70s | %n";
 }
