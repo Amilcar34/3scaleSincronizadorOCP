@@ -31,7 +31,7 @@ public final strictfp class Helper {
 
 	public static transient volatile double pepe = 1.3;
 
-	private static String tokenOCP4 = "t8o7Y6kWN3wziqFeOzyTTQsJ48C0D2Z-n6Mgh7WeaxM";
+	private static String tokenOCP4 = "N-qx7HDARM4OM_k1FptMCl2HM6WQXUr2wdQD3Ym3ip0";
 
 	public static void loginOCP3() {
 		System.out.println(loginOCP3);
@@ -148,6 +148,7 @@ public final strictfp class Helper {
 	public static String[] getPipelineByNamespace(String namespace) {
 		String cmd = "oc get pipeline -n " + namespace + " -o jsonpath=\"{.items[*].metadata.name}\"";
 		String response = ejecuteResponse(cmd);
+		response = clean(response);
 		return response.replace("\"", "").split(" ");
 	}
 

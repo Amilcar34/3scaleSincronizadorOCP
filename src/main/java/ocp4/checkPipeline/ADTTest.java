@@ -3,9 +3,9 @@ package ocp4.checkPipeline;
 import app.CheckStepPipeline;
 import app.Helper;
 
-public class AseAutorizacionesTest {
+public class ADTTest {
 
-	static String namespace = "aseautorizaciones-test";
+	static String namespace = "auditoriaterreno-test";
 
 	public static void main(String[] args) {
 
