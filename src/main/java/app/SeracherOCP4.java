@@ -11,65 +11,30 @@ import java.util.Map;
 import java.util.Set;
 
 public class SeracherOCP4 {
-	
-	private static final CharSequence search_key = "prestaciones-broker";
-	private static final CharSequence search_value = "BROKER_PRESTACIONES";
 
-	private final static String[] namespaces = { 
-			"aseautorizaciones-dev",
-			"aseautorizaciones-test",
-			"aseautorizaciones-uat",
-			"aseprestadores-dev",
-			"aseprestadores-test",
-			"aseprestadores-uat",
-			"aseventas-dev",
-			"aseventas-test",
-			"aseventas-uat",
-			"auditoriaterreno-dev",
-			"auditoriaterreno-test",
-			"auditoriaterreno-uat",
-			"medifemobile-dev",
-			"medifemobile-test",
-			"medifemobile-uat",
-			"servicioscomunes-dev",
-			"servicioscomunes-test",
-			"servicioscomunes-uat",
-			"sigo-dev",
-			"sigo-test",
-			"sigo-uat",
-			"sigoprestaciones-dev",
-			"sigoprestaciones-test",
-			"sigoprestaciones-uat",
-			"sume-dev",
-			"sume-test",
-			"3scale",
-			"rhpam",
-			"ase-rhpam",
-			"rhpam-medife-uat",
-			"rhpam-sandbox",
-			"sonarqube",
-			"sso",
-	};
+	private static final CharSequence search_key = "kie-test-kieserver-rhpam-73";
+	private static final CharSequence search_value = "kie-test-kieserver-rhpam-73";
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 		Set<String> lista = new HashSet<String>();
 		System.out.println(LocalDateTime.now());
 		Helper.loginOCP4();
+		Set<String> namespaces = Helper.getNamespaces();
 		for (String namespace : namespaces) {
-			Helper.selectNamespace(namespace);
-			Set<String> artefactos = Helper.getArtefactosOCP4();
+			Set<String> artefactos = Helper.getArtefactosByNamespace(namespace);
 			artefactos.forEach(a -> {
 				Map<String, String> configMap = new HashMap<String, String>();
 				try {
-					configMap = Helper.getConfigMapByAplication(a);
+					Helper helper = new Helper();
+					configMap = helper.getConfigMapByAplicationByNamespace(a, namespace);
 				} catch (NegativeArraySizeException e) {
-					System.err.println("No se encontro config map para " + a);
+					System.err.println("No se encontro config map para " + a + " de " + namespace);
 				}
 				for (Map.Entry<String, String> entry : configMap.entrySet()) {
 					String k = entry.getKey();
 					String v = entry.getValue();
-					if (k.contains(search_key) && v.equals(search_value)) {
-						lista.add(namespace);
+					if (k.contains(search_key) || v.contains(search_value)) {
+						lista.add(namespace + "  |  " + a);
 						System.err.format(leftAlignFormat, namespace, a, v);
 					}
 				}

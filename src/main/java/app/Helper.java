@@ -31,7 +31,7 @@ public final strictfp class Helper {
 
 	public static transient volatile double pepe = 1.3;
 
-	private static String tokenOCP4 = "N-qx7HDARM4OM_k1FptMCl2HM6WQXUr2wdQD3Ym3ip0";
+	private static String tokenOCP4 = "odPtniKjCesXAuxuN28zg7-KerueUJsapfe9kBlc1Ko";
 
 	public static void loginOCP3() {
 		System.out.println(loginOCP3);
@@ -43,7 +43,7 @@ public final strictfp class Helper {
 		return ejecuteResponse(loginOCP4);
 	}
 
-	public static String ejecuteResponse(String command) {
+	public static synchronized String ejecuteResponse(String command) {
 //		System.out.println(command);
 		StringBuffer response = null;
 		try {
@@ -83,6 +83,13 @@ public final strictfp class Helper {
 		return image;
 	}
 
+	public static Set<String> getNamespaces() {
+		String command = "oc get projects -o jsonpath=\"{.items[*]['metadata.name']}\"";
+		String ejecuteResponse = ejecuteResponse(command);
+		ejecuteResponse = clean(ejecuteResponse);
+		return Set.of(ejecuteResponse.split(" "));
+	}
+
 	public static void selectNamespace(String namespace) {
 		String command = "oc project " + namespace;
 		String ejecuteResponse = ejecuteResponse(command);
@@ -93,6 +100,15 @@ public final strictfp class Helper {
 	public static Set<String> getArtefactosOCP4() {
 		String command = "oc get deployments -o jsonpath=\"{.items[*]['metadata.name']}\"";
 		String respuesta = ejecuteResponse(command);
+		String replaceAll = respuesta.replaceAll("\"", "").replace("\n", "");
+		return Set.of(replaceAll.split(" "));
+	}
+
+	public static Set<String> getArtefactosByNamespace(String namespace) {
+		String filterNs = " -n " + namespace;
+		String filterDm = " -o jsonpath=\"{.items[*]['metadata.name']}\"";
+		String command = "oc get deployments ";
+		String respuesta = ejecuteResponse(command + filterNs + filterDm);
 		String replaceAll = respuesta.replaceAll("\"", "").replace("\n", "");
 		return Set.of(replaceAll.split(" "));
 	}
@@ -113,6 +129,17 @@ public final strictfp class Helper {
 		return idConfigmap;
 	}
 
+	public String getIdConfigMapByNamespace(String aplication, String namespace) {
+		String filterNs = " -n " + namespace;
+		String filter = " -o jsonpath=\"{['spec.template.spec.containers'][0].envFrom[0].configMapRef.name}\"";
+		String idConfigmapCommand = "oc get deployments " + aplication;
+		String command = idConfigmapCommand + filterNs + filter;
+		String idConfigmap = clean(ejecuteResponse(command));
+		System.out.println(command);
+		System.out.println(idConfigmap);
+		return idConfigmap;
+	}
+
 	public static Map<String, String> getConfigMapById(String idConfigmap) {
 
 		String configMapString = "oc get configmap " + idConfigmap + " -o jsonpath=\"{['data']}\"";
@@ -120,8 +147,32 @@ public final strictfp class Helper {
 			configMapString = clean(ejecuteResponse(configMapString));
 		} catch (NegativeArraySizeException e) {
 			System.err.println("No se enocntro config map para " + idConfigmap
-					+ "/nEjecute el siguiente comando para tener mas detalle:");
+					+ "\n Ejecute el siguiente comando para tener mas detalle:");
 			System.err.println(configMapString);
+			System.out.println(" - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+			System.out.println("Puede ser que no funcione el POD actualmente?");
+			System.out.println(" - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+			
+			configMapString = "";
+		}
+		return configMapString.isBlank() ? Map.of() : new Gson().fromJson(configMapString, Map.class);
+	}
+
+	public Map<String, String> getConfigMapByIdByNamespace(String idConfigmap, String namespace) {
+		String filterNs = " -n " + namespace;
+		String filterDm = " -o jsonpath=\"{['data']}\"";
+		String configMapString = "oc get configmap " + idConfigmap;
+		String command = configMapString + filterNs + filterDm;
+
+		try {
+			configMapString = clean(ejecuteResponse(command));
+		} catch (NegativeArraySizeException e) {
+			System.err.println("No se enocntro config map para " + idConfigmap
+					+ "\n Ejecute el siguiente comando para tener mas detalle:");
+			System.err.println(command);
+			System.out.println(" - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+			System.out.println("Puede ser que no funcione el POD actualmente?");
+			System.out.println(" - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
 			configMapString = "";
 		}
 		return configMapString.isBlank() ? Map.of() : new Gson().fromJson(configMapString, Map.class);
@@ -131,6 +182,12 @@ public final strictfp class Helper {
 		String idConfigmap = getIdConfigMap(aplication);
 		// se descarta si no tiene configMap
 		return idConfigmap.length() > 3 ? getConfigMapById(idConfigmap) : Map.of();
+	}
+
+	public Map<String, String> getConfigMapByAplicationByNamespace(String aplication, String namespace) {
+		String idConfigmap = new Helper().getIdConfigMapByNamespace(aplication, namespace);
+		// se descarta si no tiene configMap
+		return idConfigmap.length() > 3 ? new Helper().getConfigMapByIdByNamespace(idConfigmap, namespace) : Map.of();
 	}
 
 	public static Set<String> getIdsConfigsMapsByNamespace(String namespace) {
