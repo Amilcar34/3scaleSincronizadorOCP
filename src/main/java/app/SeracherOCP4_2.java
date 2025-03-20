@@ -12,10 +12,10 @@ import java.util.Set;
 
 public class SeracherOCP4_2 {
 	
-	private static final CharSequence search_key = "";
-	private static final CharSequence search_value = "10.3.4.220";
+	private static final CharSequence search_key = "smtp.gmail.com";
+	private static final CharSequence search_value = "srv940clpost01.medife.com";
 
-	private static String tokenOCP4 = "0244_hIvfyiWah6xn6HG4rPfgHgmEypoyUYx6ApYVAQ";
+	private static String tokenOCP4 = "jE4n7J9CYBKfZhMuIVDtEsF4RmrJhmwj5EhXsqoVDaY";
 
 	private final static String[] namespaces = { 
 			"aseautorizaciones-test",

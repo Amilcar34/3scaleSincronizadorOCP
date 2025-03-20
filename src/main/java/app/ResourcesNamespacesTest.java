@@ -15,9 +15,42 @@ public class ResourcesNamespacesTest {
 		}
 	}
 
-	static String[] namespaces = new String[] { "aseautorizaciones-test", "aseprestadores-test", "aseventas-test",
-			"auditoriaterreno-test", "medifemobile-test", "sigo-test"
-//			, "servicioscomunes-test"
+	static String[] namespaces = new String[] { "aseautorizaciones-dev",
+			"aseautorizaciones-test",
+			"aseautorizaciones-uat",
+			"aseconectadevops-test",
+			"aseprestadores-dev",
+			"aseprestadores-test",
+			"aseprestadores-uat",
+			"aseredes-dev",
+			"aseredes-test",
+			"aseventas-dev",
+			"aseventas-test",
+			"auditoriaterreno-dev",
+			"auditoriaterreno-test",
+			"cicd",
+			"medifemobile-dev",
+			"medifemobile-test",
+			"mediflex-test",
+			"minio-operator",
+			"nexus",
+			"openshift-operators",
+			"openshift-operators-redhat",
+			"openshift-tempo-operator",
+			"poc",
+			"revproxy-test",
+			"rhpam",
+			"rhpam-73",
+			"servicioscomunes-dev",
+			"servicioscomunes-test",
+			"sigo-dev",
+			"sigo-test",
+			"sigoingresos-dev",
+			"sigoingresos-test",
+			"sigoprestaciones-dev",
+			"sigoprestaciones-test",
+			"sonarqube",
+			"threescale",
 	};
 
 }

@@ -27,16 +27,9 @@ import app.model.Status;
 
 public final strictfp class Helper {
 
-	private static String tokenOCP3 = "bOCoKUXI6OQ2uUfTfayjeb6bwAbip7RsIy-o1YVF658";
-
 	public static transient volatile double pepe = 1.3;
 
-	private static String tokenOCP4 = "odPtniKjCesXAuxuN28zg7-KerueUJsapfe9kBlc1Ko";
-
-	public static void loginOCP3() {
-		System.out.println(loginOCP3);
-		ejecute(loginOCP3);
-	}
+	static String tokenOCP4 = "dIUT6syu3cNy7PWqiTByXefN9gGCRyL0HbgG9_rzDd4";
 
 	public static String loginOCP4() {
 		System.out.println(loginOCP4);
@@ -44,6 +37,32 @@ public final strictfp class Helper {
 	}
 
 	public static synchronized String ejecuteResponse(String command) {
+//		System.out.println(command);
+		StringBuffer response = null;
+		try {
+			Process proc = Runtime.getRuntime().exec(command);
+
+			BufferedReader readerInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+			BufferedReader readerError = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+
+			response = new StringBuffer(readerInput.read());
+//			response = new StringBuffer(readerError.read());
+
+			String line = "";
+			while ((line = readerInput.readLine()) != null) {
+				response.append(line + "\n");
+			}
+			proc.waitFor();
+
+		} catch (IOException | InterruptedException e) {
+			System.err.println("Error al ejecutar");
+			System.err.println(command);
+			e.printStackTrace();
+		}
+		return response.toString();
+	}
+	
+	public static String ejecuteRsp(String command) {
 //		System.out.println(command);
 		StringBuffer response = null;
 		try {
@@ -104,13 +123,13 @@ public final strictfp class Helper {
 		return Set.of(replaceAll.split(" "));
 	}
 
-	public static Set<String> getArtefactosByNamespace(String namespace) {
+	public static String[] getArtefactosByNamespace(String namespace) {
 		String filterNs = " -n " + namespace;
 		String filterDm = " -o jsonpath=\"{.items[*]['metadata.name']}\"";
 		String command = "oc get deployments ";
 		String respuesta = ejecuteResponse(command + filterNs + filterDm);
 		String replaceAll = respuesta.replaceAll("\"", "").replace("\n", "");
-		return Set.of(replaceAll.split(" "));
+		return replaceAll.split(" ");
 	}
 
 	// valido para OCP 3, en OCP 4 usar 'deployments config' -> 'deployments'
@@ -134,9 +153,7 @@ public final strictfp class Helper {
 		String filter = " -o jsonpath=\"{['spec.template.spec.containers'][0].envFrom[0].configMapRef.name}\"";
 		String idConfigmapCommand = "oc get deployments " + aplication;
 		String command = idConfigmapCommand + filterNs + filter;
-		String idConfigmap = clean(ejecuteResponse(command));
-		System.out.println(command);
-		System.out.println(idConfigmap);
+		String idConfigmap = clean(new Helper().ejecuteRsp(command));
 		return idConfigmap;
 	}
 
@@ -165,7 +182,7 @@ public final strictfp class Helper {
 		String command = configMapString + filterNs + filterDm;
 
 		try {
-			configMapString = clean(ejecuteResponse(command));
+			configMapString = clean(new Helper().ejecuteRsp(command));
 		} catch (NegativeArraySizeException e) {
 			System.err.println("No se enocntro config map para " + idConfigmap
 					+ "\n Ejecute el siguiente comando para tener mas detalle:");
@@ -303,7 +320,5 @@ public final strictfp class Helper {
 
 	static String loginOCP4 = "oc login --token=sha256~" + tokenOCP4
 			+ " --server=https://api.osnoprod01.aseconecta.com.ar:6443";
-
-	static String loginOCP3 = "oc login https://openshift.ase.local:443 --token=" + tokenOCP3;
 
 }

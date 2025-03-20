@@ -41,12 +41,12 @@ public class CheckStepPipeline {
 		System.out.println();
 		System.out.println(artefactTaskTable);
 		System.out.println();
-		System.out.printf("%25s", "Artefacto     |");
+		System.out.printf("%25s", "Artefacto    |");
 		tasksSet.forEach(t -> System.out.printf(formatColumn, t.toUpperCase()));
 
 		artefactSet.forEach(a -> {
 			System.out.println();
-			System.out.printf("%25s", a.replace("legacy", "lgy"));
+			System.out.printf("%24s", cleanNameArtefact(a));
 			tasksSet.forEach(t -> {
 				Boolean apply = artefactTaskTable.get(a, t);
 				if (apply)
@@ -59,7 +59,7 @@ public class CheckStepPipeline {
 				}
 			});
 		});
-		System.out.println("\n- - - - - - - - - - - - FIN - - - - - - - - - - - -\n");
+		System.out.println("\n- - - - - - - - - - - - F I N - - - - - - - - - - - -\n");
 
 		taskTestFalse();
 	}
@@ -70,7 +70,7 @@ public class CheckStepPipeline {
 		tasksSet.forEach(t -> System.out.printf(formatColumn, t.toUpperCase()));
 		taskTestFalse.rowKeySet().forEach(a -> {
 			System.out.println();
-			System.out.printf("%25s", a);
+			System.out.printf("%25s", cleanNameArtefact(a));
 			tasksSet.forEach(t -> {
 				Boolean apply = artefactTaskTable.get(a, t);
 				if (apply)
@@ -85,6 +85,10 @@ public class CheckStepPipeline {
 		System.out.println("\n");
 		taskTestFalse.rowKeySet().forEach(System.out::println);
 		System.out.println();
+	}
+
+	private String cleanNameArtefact(String a) {
+		return a.replaceAll("(-api|-cd|-ci)", "");
 	}
 
 	private void pullTaskArtefact() {
